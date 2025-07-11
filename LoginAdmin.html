@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="./vars.css">
+  <link rel="stylesheet" href="./style.css">
+  <script src='https://cdn.tailwindcss.com/3.2.0'></script>
+  <script src="./tailwind.config.js"></script>
+  <link rel="icon" type="image/png" href="DataPemakaman/_4-s-ld-bmo-c-400-x-400-removebg-preview-10.png">
+  <style>
+    a, button, input, select, h1, h2, h3, h4, h5, * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      border: none;
+      text-decoration: none;
+      background: none;
+      -webkit-font-smoothing: antialiased;
+    }
+    menu, ol, ul {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+    }
+    html { scroll-behavior: smooth; }
+    .navbar-link {
+      position: relative;
+      transition: color 0.3s;
+    }
+    .navbar-link::after {
+      content: '';
+      display: block;
+      width: 100%;
+      height: 3px;
+      background: #fff;
+      border-radius: 2px;
+      position: absolute;
+      left: 0;
+      bottom: -4px;
+      opacity: 0;
+      transform: scaleX(0);
+      transition: transform 0.3s cubic-bezier(.4,0,.2,1), opacity 0.3s;
+    }
+    .navbar-link:not(.active-navbar-link):hover::after {
+      content: '';
+      display: block;
+      width: 100%;
+      height: 3px;
+      background: #fff;
+      border-radius: 2px;
+      position: absolute;
+      left: 0;
+      bottom: -4px;
+      opacity: 1;
+      transform: scaleX(1);
+      transition: transform 0.3s cubic-bezier(.4,0,.2,1);
+    }
+    .active-navbar-link {
+      position: relative;
+      color: #fff !important;
+      background: none;
+      border-radius: 0;
+    }
+    .active-navbar-link::after {
+      content: '';
+      display: block;
+      width: 100%;
+      height: 3px;
+      background: #fff;
+      border-radius: 2px;
+      position: absolute;
+      left: 0;
+      bottom: -4px;
+      opacity: 1;
+      transform: scaleX(1);
+      transition: transform 0.3s cubic-bezier(.4,0,.2,1);
+    }
+  </style>
+  <title>Login Admin</title>
+</head>
+<body class="bg-[#f8f9fa] min-h-screen flex flex-col">
+  <!-- Navbar -->
+  <nav class="bg-[#1f2937] w-full fixed top-0 z-50 shadow-md">
+    <div class="container mx-auto px-4 h-[65px] flex items-center justify-between">
+      <div class="flex items-center">
+        <img class="w-10 h-10" src="LoginAdmin/_4-s-ld-bmo-c-400-x-400-removebg-preview-10.png" alt="Logo"/>
+        <span class="text-white font-semibold text-xl ml-2">SIMPAM</span>
+      </div>
+      <!-- Desktop Menu -->
+      <div class="hidden md:flex items-center space-x-8">
+        <a href="LandingPage.html#hero" class="navbar-link text-[#91C8E4] font-medium">Beranda</a>
+        <a href="LandingPage.html#about" class="navbar-link text-[#91C8E4] font-medium">Tentang</a>
+        <a href="LandingPage.html#history" class="navbar-link text-[#91C8E4] font-medium">Sejarah</a>
+        <a href="LandingPage.html#vision" class="navbar-link text-[#91C8E4] font-medium">Visi dan Misi</a>
+        <a href="LoginAdmin.html" class="bg-[#2563eb] text-white px-4 py-2 rounded-lg">Login Admin</a>
+      </div>
+      <!-- Mobile Hamburger -->
+      <button id="mobile-menu-btn" class="md:hidden text-white focus:outline-none">
+        <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+      </button>
+    </div>
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="md:hidden hidden bg-[#1f2937] px-4 pb-4">
+      <a href="LandingPage.html#hero" class="block navbar-link text-[#2563eb] font-medium py-2">Beranda</a>
+      <a href="LandingPage.html#about" class="block navbar-link text-[#2563eb] font-medium py-2">Tentang</a>
+      <a href="LandingPage.html#history" class="block navbar-link text-[#2563eb] font-medium py-2">Sejarah</a>
+      <a href="LandingPage.html#vision" class="block navbar-link text-[#2563eb] font-medium py-2">Visi dan Misi</a>
+      <a href="LoginAdmin.html" class="block bg-[#2563eb] text-white px-4 py-2 rounded-lg mt-2 text-center">Login Admin</a>
+    </div>
+  </nav>
+  <!-- End Navbar -->
+
+  <main class="flex-1 flex items-center justify-center py-8 mt-[80px]">
+    <div class="w-full max-w-md bg-white rounded-xl border border-[#e5e7eb] shadow-lg p-8 mx-2">
+      <div class="flex flex-col items-center mb-6">
+          <div class="flex items-center space-x-2">
+          <img src="LoginAdmin/_4-s-ld-bmo-c-400-x-400-removebg-preview-11.png" alt="Logo" class="w-10 h-10 object-cover" />
+          <span class="text-[#2563eb] font-semibold text-xl">SIMPAM</span>
+        </div>
+      </div>
+      <h1 class="text-[#1f2937] text-center font-bold text-2xl mb-1">Login Admin</h1>
+      <p class="text-[#6b7280] text-center text-base mb-6">Masuk ke sistem pengelolaan data pemakaman</p>
+      <form id="loginForm" class="space-y-5">
+        <div>
+          <label for="email" class="block text-[#374151] font-medium text-sm mb-1">Email</label>
+          <input id="email" type="email" placeholder="username" class="w-full rounded-lg border border-[#374151] h-12 px-4 text-base text-[#374151] placeholder:text-[rgba(0,0,0,0.30)] focus:outline-none focus:ring-2 focus:ring-[#2563eb]" />
+        </div>
+        <div>
+          <label for="password" class="block text-[#374151] font-medium text-sm mb-1">Password</label>
+          <div class="relative">
+            <input id="password" type="password" placeholder="kata sandi" class="w-full rounded-lg border border-[#374151] h-12 px-4 text-base text-[#374151] placeholder:text-[rgba(0,0,0,0.30)] focus:outline-none focus:ring-2 focus:ring-[#2563eb]" />
+            <img id="togglePassword" src="LoginAdmin/frame0.svg" alt="Show Password" class="w-5 h-5 absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer" />
+          </div>
+        </div>
+        <button type="submit" class="w-full bg-[#2563eb] text-white rounded-lg h-12 font-medium text-base shadow-md hover:bg-blue-700 transition">Masuk</button>
+      </form>
+    </div>
+  </main>
+<!-- Animated Popup for Login Failure -->
+<div id="loginFailPopup" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-50 hidden">
+  <div class="bg-white px-8 py-6 rounded-lg shadow-lg flex flex-col items-center animate-bounceIn">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-red-500 mb-2 animate-shake" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+    </svg>
+    <span id="loginFailMsg" class="text-red-600 font-semibold text-lg mb-2">Login gagal!</span>
+    <button id="closeFailPopup" class="mt-2 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition">Tutup</button>
+  </div>
+</div>
+<style>
+@keyframes bounceIn {
+  0% {transform: scale(0.7); opacity: 0;}
+  60% {transform: scale(1.05); opacity: 1;}
+  80% {transform: scale(0.95);}
+  100% {transform: scale(1);}
+}
+.animate-bounceIn {
+  animation: bounceIn 0.5s cubic-bezier(.68,-0.55,.27,1.55);
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-8px); }
+  40%, 80% { transform: translateX(8px); }
+}
+.animate-shake { animation: shake 0.4s; }
+</style>
+  <script>
+    // Mobile menu toggle
+    document.getElementById('mobile-menu-btn').addEventListener('click', function () {
+      const menu = document.getElementById('mobile-menu');
+      menu.classList.toggle('hidden');
+    });
+
+    // Toggle password visibility
+    const passwordInput = document.getElementById('password');
+    const togglePassword = document.getElementById('togglePassword');
+    if (togglePassword) {
+      togglePassword.addEventListener('click', () => {
+        const isPassword = passwordInput.getAttribute('type') === 'password';
+        passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+        // Optionally adjust icon style to indicate state
+        togglePassword.classList.toggle('opacity-50');
+      });
+    }
+
+  </script>
+<script>
+  // Always enable closing login fail popup
+  document.addEventListener('DOMContentLoaded', function() {
+    var closeFailPopup = document.getElementById('closeFailPopup');
+    var loginFailPopup = document.getElementById('loginFailPopup');
+    if (closeFailPopup && loginFailPopup) {
+      closeFailPopup.addEventListener('click', function() {
+        loginFailPopup.classList.add('hidden');
+      });
+    }
+  });
+</script>
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-analytics.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+  
+    // Your web app's Firebase configuration
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    const firebaseConfig = {
+      apiKey: "AIzaSyDQslGoA5f6TNOJf0oDC0lAGXqHO5S0wsM",
+      authDomain: "simpam-dd361.firebaseapp.com",
+      projectId: "simpam-dd361",
+      storageBucket: "simpam-dd361.firebasestorage.app",
+      messagingSenderId: "445192040754",
+      appId: "1:445192040754:web:35525c654299ca81cfe72b",
+      measurementId: "G-7FJ5FWW44N"
+    };
+  
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+
+    // Initialize Firebase Authentication
+    const auth = getAuth(app);
+
+    // Handle form submission
+    document.getElementById("loginForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      signInWithEmailAndPassword(auth, email, password)
+        .then(() => {
+          const formAdmin = document.getElementById("formAdmin");
+          if (formAdmin) {
+            formAdmin.classList.remove("hidden");
+          }
+          window.location.href = 'DataPemakaman.html';
+        })
+        .catch(err => {
+          // Show animated popup
+          const popup = document.getElementById('loginFailPopup');
+          const msg = document.getElementById('loginFailMsg');
+          if (popup && msg) {
+            msg.textContent = 'Login gagal'
+            popup.classList.remove('hidden');
+          }
+        });
+    });
+  </script>
+</body>
+</html>

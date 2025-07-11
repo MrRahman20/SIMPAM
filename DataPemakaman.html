@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="./vars.css">
+  <link rel="stylesheet" href="./style.css">
+  <script src='https://cdn.tailwindcss.com/3.2.0' ></script>
+  <script src="./tailwind.config.js"></script>
+  <link rel="icon" type="image/png" href="DataPemakaman/_4-s-ld-bmo-c-400-x-400-removebg-preview-10.png">
+  <style>
+   a,
+   button,
+   input,
+   select,
+   h1,
+   h2,
+   h3,
+   h4,
+   h5,
+   * {
+       box-sizing: border-box;
+       margin: 0;
+       padding: 0;
+       border: none;
+       text-decoration: none;
+       background: none;
+   
+       -webkit-font-smoothing: antialiased;
+   }
+   
+   menu, ol, ul {
+       list-style-type: none;
+       margin: 0;
+       padding: 0;
+   }
+    tr.editing .delete-foto-btn {
+      display: flex !important;
+    }
+   </style>
+  <title>Data Pemakaman</title>
+</head>
+<body class="bg-gray-100 min-h-screen">
+  <header class="bg-[#1f2937] shadow-md border-b border-[#e5e7eb]">
+    <div class="container mx-auto flex items-center justify-between px-4 py-3">
+      <div class="flex items-center gap-3">
+        <img src="DataPemakaman/_4-s-ld-bmo-c-400-x-400-removebg-preview-10.png" alt="Logo" class="w-10 h-10 object-cover rounded" />
+        <span class="text-white font-semibold text-xl">SIMPAM</span>
+      </div>
+      <button 
+  class="flex items-center gap-2 bg-[#2563eb] text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+  onclick="showLogoutPopup(event)"
+>
+  Logout
+</button>
+    </div>
+  </header>
+  <main class="container mx-auto px-2 sm:px-4 py-6">
+    <div class="bg-white rounded-xl shadow-lg border border-[#e5e7eb] p-6">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+        <div class="flex gap-2 items-center mt-2 md:mt-0">
+          <label for="sortMenu" class="text-sm text-gray-600 mr-1">Urutkan:</label>
+          <select id="sortMenu" class="bg-gray-200 rounded px-2 py-1 text-sm">
+            <option value="namaAz">A-Z</option>
+            <option value="tanggalTerbaru">Terbaru</option>
+            <option value="tanggalTerlama">Terlama</option>
+          </select>
+        </div>
+        <h1 class="text-2xl font-bold text-[#1f2937]">Data Pemakaman</h1>
+        <div class="flex gap-2">
+        </div>
+      </div>
+      <!-- Popup Error Data Harus Diisi -->
+      <div id="errorPopup" class="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-[60] hidden">
+        <div class="bg-white rounded-xl shadow-lg px-8 py-10 flex flex-col items-center animate-bounce-in min-w-[280px]">
+          <svg class="w-16 h-16 mb-4 text-red-500 animate-success-pop" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/>
+            <path stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M8 12l4 4 4-8"/>
+          </svg>
+          <h2 class="text-xl font-bold mb-2 text-[#dc2626]">Data harus diisi!</h2>
+          <button onclick="document.getElementById('errorPopup').classList.add('hidden')" class="mt-4 px-6 py-2 rounded-lg bg-[#dc2626] text-white font-semibold shadow hover:bg-red-700 transition">Tutup</button>
+        </div>
+      </div>
+      <!-- Modal Preview Foto Besar -->
+      <div id="fotoPreviewModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-[100] hidden">
+        <div class="relative">
+          <img id="fotoPreviewImg" src="#" alt="Foto Makam Besar" class="max-h-[80vh] max-w-[90vw] rounded-xl shadow-lg border-4 border-white" />
+          <button id="closeFotoPreview" class="absolute -top-4 -right-4 bg-white border border-gray-300 rounded-full w-10 h-10 flex items-center justify-center shadow hover:bg-red-500 hover:text-white transition text-gray-500 text-2xl">&times;</button>
+        </div>
+      </div>
+      <!-- Popup Sukses -->
+      <div id="successPopup" class="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-[60] hidden">
+        <div class="bg-white rounded-xl shadow-lg px-8 py-10 flex flex-col items-center animate-bounce-in min-w-[280px]">
+          <svg class="w-16 h-16 mb-4 text-green-500 animate-success-pop" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/>
+            <path stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M8 12l3 3 5-5"/>
+          </svg>
+          <h2 class="text-xl font-bold mb-2 text-[#1f2937]">Berhasil!</h2>
+          <p class="mb-4 text-gray-600">Data berhasil disimpan!</p>
+          <button id="closeSuccessPopup" class="mt-2 px-4 py-2 rounded-lg bg-[#2563eb] text-white hover:bg-blue-700 transition">Tutup</button>
+        </div>
+      </div>
+
+        <div id="inputModal" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden">
+          <div class="bg-white rounded-xl shadow-lg w-full max-w-2xl p-8 relative animate-bounce-in overflow-y-auto max-h-[100vh] sm:max-h-none sm:overflow-visible">
+            <button id="closeInputModalBtn" class="absolute top-4 right-4 text-gray-500 hover:text-red-500 text-2xl font-bold">&times;</button>
+            <h2 class="text-2xl font-bold text-[#1f2937] mb-2 text-center">Input Data Pemakaman</h2>
+            <form class="space-y-5 mt-4" id="inputFormModal">
+              <div>
+                <label class="block text-[#374151] font-medium text-sm mb-1" for="namaModal">Nama Almarhum</label>
+                <input id="namaModal" name="nama" type="text" maxlength="50" class="rounded-lg border border-[#d1d5db] w-full h-10 px-3 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="Nama Almarhum" />
+              </div>
+              <div>
+                <label class="block text-[#374151] font-medium text-sm mb-1" for="ahliWarisModal">Ahli Waris</label>
+                <input id="ahliWarisModal" name="ahliWaris" type="text" maxlength="50" class="rounded-lg border border-[#d1d5db] w-full h-10 px-3 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="Ahli Waris" />
+              </div>
+              <div>
+                <label class="block text-[#374151] font-medium text-sm mb-1" for="tanggalMeninggalModal">Tanggal Meninggal</label>
+                <input id="tanggalMeninggalModal" name="tanggalMeninggal" type="date" class="rounded-lg border border-[#d1d5db] w-full h-10 px-3 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-400" />
+              </div>
+              <div>
+                <label class="block text-[#374151] font-medium text-sm mb-1" for="fotoModal">Upload Foto makam</label>
+                <input id="fotoModal" name="foto" type="file" accept="image/*" class="hidden" />
+                <div class="flex flex-col md:flex-row md:items-center gap-3 mt-2">
+                  <button type="button" id="btnChooseFoto" class="flex items-center gap-2 justify-center w-full md:w-auto py-2 px-2 text-sm sm:text-base rounded-lg bg-gradient-to-r from-blue-500 to-green-400 text-white font-semibold shadow-md hover:from-blue-700 hover:to-green-600 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V7M16 3H8a2 2 0 00-2 2v4h12V5a2 2 0 00-2-2zm-4 8a4 4 0 100 8 4 4 0 000-8z"/></svg>
+                    <span id="labelFotoModal">Foto makam</span>
+                  </button>
+                  <div id="previewFotoWrapper" class="relative hidden">
+  <img id="previewFotoModal" src="#" alt="Preview Foto" class="rounded-lg max-h-20 max-w-[120px] border border-gray-200 md:mt-0 mt-2" />
+  <button type="button" id="btnRemoveFoto" class="absolute -top-2 -right-2 bg-white border border-gray-300 rounded-full w-6 h-6 flex items-center justify-center shadow hover:bg-red-500 hover:text-white transition text-gray-500 text-base">&times;</button>
+</div>
+                </div>
+              </div>
+              <div>
+                <label class="block text-[#374151] font-medium text-sm mb-1" for="alamatModal">Alamat</label>
+                <textarea id="alamatModal" name="alamat" rows="3" maxlength="200" class="rounded-lg border border-[#d1d5db] w-full px-3 py-1.5 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none" placeholder="Alamat"></textarea>
+              </div>
+              <div>
+                <label class="block text-[#374151] font-medium text-sm mb-2">Lokasi Makam</label>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label class="block text-[#6b7280] text-xs mb-1" for="blokModal">Blok</label>
+                    <input id="blokModal" name="blok" type="text" maxlength="10" class="rounded-lg border border-[#d1d5db] w-full h-12 px-4 focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="Blok" />
+                  </div>
+                  <div>
+                    <label class="block text-[#6b7280] text-xs mb-1" for="bladModal">Blad</label>
+                    <input id="bladModal" name="blad" type="text" class="rounded-lg border border-[#d1d5db] w-full h-12 px-4 focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="Blad" />
+                  </div>
+                  <div>
+                    <label class="block text-[#6b7280] text-xs mb-1" for="nomorModal">Nomor</label>
+                    <input id="nomorModal" name="nomor" type="text" class="rounded-lg border border-[#d1d5db] w-full h-12 px-4 focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="Nomor" />
+                  </div>
+                </div>
+              </div>
+              <div class="flex flex-col md:flex-row gap-4 mt-6">
+                <button type="reset" class="rounded-lg border border-[#d1d5db] bg-white text-[#374151] font-medium text-base h-12 w-full md:w-1/2 hover:bg-gray-100 transition">Bersihkan</button>
+                <button type="submit" class="rounded-lg bg-[#2563eb] text-white font-medium text-base h-12 w-full md:w-1/2 shadow-md hover:bg-blue-700 transition">Simpan Data</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
+        <div class="flex items-center bg-white border rounded-lg px-3 py-2 w-full md:w-1/3">
+          <img src="DataPemakaman/frame1.svg" class="w-4 h-4 mr-2" alt="Cari" />
+          <input id="searchInput" type="text" placeholder="Cari nama, ahli waris, alamat..." class="flex-1 outline-none text-sm" />
+        </div>
+        <div class="flex items-center gap-2">
+
+          <span class="text-gray-600 text-sm">Menampilkan</span>
+          <select id="perPageSelect" class="bg-gray-200 rounded px-2 py-1 text-sm w-16">
+            <option>10</option>
+            <option>25</option>
+            <option>50</option>
+          </select>
+          <span id="dataCountTop" class="text-gray-600 text-sm"></span>
+        </div>
+      </div>
+
+      <button id="deleteSelectedBtn" class="mb-3 px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 transition">Hapus Terpilih</button>
+      <button id="exportCsvBtn" class="mb-3 px-4 py-2 rounded-lg bg-green-500 text-white hover:bg-green-600 transition">Export CSV</button>
+      <button id="openInputModalBtn" class="mb-3 px-4 py-2 rounded-lg bg-[#2563eb] text-white hover:bg-blue-700 transition">
+        <class="w-4 h-4" alt="Input"/>Input Data</button>
+      <div class="overflow-x-auto rounded-lg border border-[#e5e7eb]">
+        <table class="min-w-full divide-y divide-gray-200 break-words max-w-xs" id="pemakamanTable">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="p-3 text-xs font-semibold text-center">
+                PILIH SEMUA<br><input type="checkbox" id="checkAllRows" />
+              </th>
+              <th class="p-3 text-left uppercase font-semibold">NO</th>
+              <th class="p-3 text-left uppercase font-semibold">NAMA ALMARHUM</th>
+              <th class="p-3 text-left uppercase font-semibold">AHLI WARIS</th>
+              <th class="p-3 text-left uppercase font-semibold">TANGGAL MENINGGAL</th>
+              <th class="p-3 text-left uppercase font-semibold">ALAMAT</th>
+              <th class="p-3 text-left uppercase font-semibold">LOKASI MAKAM</th>
+              <th class="p-3 text-left uppercase font-semibold">FOTO</th>
+              <th class="p-3 text-left uppercase font-semibold">AKSI</th>
+            </tr>
+          </thead>
+          <tbody id="pemakamanTableBody">
+          </tbody>
+        </table>
+      </div>
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between mt-6 gap-4">
+        <div class="text-gray-600 text-sm" id="showingInfoBottom">
+          Menampilkan 1 sampai 10 dari 10 data
+        </div>
+        <div class="flex gap-2">
+          <button id="prevPageBtnBottom" class="px-4 py-2 rounded-lg transition duration-200 transform bg-blue-500 text-white hover:bg-blue-600 active:scale-95 disabled:bg-blue-200 disabled:text-blue-400">Sebelumnya</button>
+          <button id="nextPageBtnBottom" class="px-4 py-2 rounded-lg transition duration-200 transform bg-blue-500 text-white hover:bg-blue-600 active:scale-95 disabled:bg-blue-200 disabled:text-blue-400">Selanjutnya</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Success Popup -->
+    <!-- Loading Popup -->
+    <div id="loadingPopup" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-[70] hidden transition-all duration-300">
+  <div class="bg-white rounded-xl shadow-lg px-8 py-10 flex flex-col items-center animate-bounce-in min-w-[220px]">
+    <svg class="w-16 h-16 mb-4 text-blue-500 animate-spin-slow" fill="none" viewBox="0 0 50 50">
+      <circle class="opacity-20" cx="25" cy="25" r="20" stroke="#2563eb" stroke-width="6" fill="none"/>
+      <path class="opacity-80" fill="#2563eb" d="M25 5
+        a 20 20 0 0 1 0 40
+        a 20 20 0 0 1 0 -40
+        M25 5
+        a 20 20 0 0 1 20 20"/>
+    </svg>
+    <span class="text-lg font-semibold text-[#2563eb] mt-2" id="loadingPopupText">Menyimpan data...</span>
+  </div>
+</div>
+<style>
+@keyframes spin-slow {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.animate-spin-slow {
+  animation: spin-slow 1.4s linear infinite;
+}
+</style>
+    </div>
+    <div id="successPopup" class="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-[60] hidden">
+  <div class="bg-white rounded-xl shadow-lg px-8 py-10 flex flex-col items-center animate-bounce-in min-w-[280px]">
+    <svg class="w-16 h-16 mb-4 text-green-500 animate-success-pop" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/>
+      <path stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M8 12l3 3 5-5"/>
+    </svg>
+    <h2 class="text-xl font-bold mb-2 text-[#1f2937]">Berhasil!</h2>
+    <p class="mb-4 text-gray-600">Data berhasil disimpan!</p>
+    <button id="closeSuccessPopup" class="mt-2 px-4 py-2 rounded-lg bg-[#2563eb] text-white hover:bg-blue-700 transition">Tutup</button>
+  </div>
+</div>
+<style>
+@keyframes pop-bounce {
+  0% { transform: scale(0.7); opacity: 0; }
+  60% { transform: scale(1.1); opacity: 1; }
+  80% { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+.animate-pop-bounce {
+  animation: pop-bounce 0.6s cubic-bezier(.68,-0.55,.27,1.55);
+}
+</style>
+
+  <!-- Delete Confirmation Popup -->
+  <div id="deletePopup" class="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-xl shadow-lg px-8 py-8 flex flex-col items-center animate-bounce-in" style="min-width:320px;">
+      <svg class="w-14 h-14 mb-3 text-red-500 animate-success-pop" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/>
+        <path stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+      <h2 class="text-xl font-bold mb-2 text-[#1f2937]">Konfirmasi Hapus</h2>
+      <p class="mb-4 text-gray-600">Hapus data ini?</p>
+      <div class="flex gap-4 mt-2">
+        <button id="confirmDeleteBtn" class="px-5 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition">Hapus</button>
+        <button id="cancelDeleteBtn" class="px-5 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition">Batal</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Popup Logout -->
+<div id="logoutPopup" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden">
+  <div id="popupBox" class="bg-white rounded-xl shadow-lg p-8 w-80 text-center scale-90 opacity-0 transition-all duration-300">
+    <h2 class="text-xl font-bold mb-4 text-[#1f2937]">Konfirmasi Logout</h2>
+    <p class="mb-6 text-gray-600">Apakah Anda yakin ingin keluar?</p>
+    <div class="flex justify-center gap-4">
+      <button onclick="hideLogoutPopup()" class="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition">Batal</button>
+      <button onclick="logoutNow()" class="px-4 py-2 rounded-lg bg-[#2563eb] text-white hover:bg-blue-700 transition">Keluar</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+
+// Firebase config
+const firebaseConfig = {
+  apiKey: "AIzaSyDQslGoA5f6TNOJf0oDC0lAGXqHO5S0wsM",
+  authDomain: "simpam-dd361.firebaseapp.com",
+  projectId: "simpam-dd361",
+  storageBucket: "simpam-dd361.appspot.com",
+  messagingSenderId: "445192040754",
+  appId: "1:445192040754:web:35525c654299ca81cfe72b",
+  measurementId: "G-7FJ5FWW44N"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+window.app = app;
+window.db = db; // Agar bisa diakses oleh script non-module
+</script>
+<script>
+  function showLogoutPopup(event) {
+    event.preventDefault();
+    const popup = document.getElementById('logoutPopup');
+    const box = document.getElementById('popupBox');
+    popup.classList.remove('hidden');
+    setTimeout(() => {
+      box.classList.remove('scale-90', 'opacity-0');
+      box.classList.add('scale-100', 'opacity-100');
+    }, 10);
+  }
+
+  function hideLogoutPopup() {
+    const popup = document.getElementById('logoutPopup');
+    const box = document.getElementById('popupBox');
+    box.classList.remove('scale-100', 'opacity-100');
+    box.classList.add('scale-90', 'opacity-0');
+    setTimeout(() => {
+      popup.classList.add('hidden');
+    }, 300);
+  }
+
+  function logoutNow() {
+    window.location.href = 'LandingPage.html';
+  }
+// --- FOTO MAKAM PREVIEW ---
+function attachDeleteFotoActions() {
+  document.querySelectorAll('.delete-foto-btn').forEach(btn => {
+    btn.onclick = function(e) {
+      e.stopPropagation();
+      console.log('[DEBUG] Silang diklik', {btn, tr: btn.closest('tr'), btnDiv: btn.closest('div')});
+      const btnDiv = btn.closest('div');
+      const tr = btn.closest('tr');
+      if (!tr || !btnDiv) {
+        console.warn('[DEBUG] Tidak ketemu tr/div', {tr, btnDiv});
+        return;
+      }
+      tr.setAttribute('data-fotourl', '');
+      tr.setAttribute('data-fotopublicid', '');
+      const fotoCell = btnDiv.closest('td');
+      console.log('[DEBUG] Akan hapus isi fotoCell', fotoCell);
+      if (fotoCell) fotoCell.innerHTML = '-';
+      console.log('[DEBUG] Selesai klik silang, cek tr:', tr);
+      // User harus klik simpan (checklist) untuk menyimpan perubahan ke database
+    };
+  });
+}
+document.addEventListener('DOMContentLoaded', function() {
+  // Handler untuk thumbnail foto makam
+  function attachFotoThumbnailActions() {
+    const thumbs = document.querySelectorAll('.foto-thumbnail');
+    console.log('[DEBUG] Menemukan', thumbs.length, 'foto-thumbnail');
+    thumbs.forEach(img => {
+      if (!img._fotoPreviewBound) {
+        img.onclick = function() {
+          const modal = document.getElementById('fotoPreviewModal');
+          const previewImg = document.getElementById('fotoPreviewImg');
+          if (modal && previewImg) {
+            previewImg.src = img.src;
+            modal.classList.remove('hidden');
+            console.log('[DEBUG] Popup foto dibuka', img.src);
+          } else {
+            console.error('[ERROR] Modal atau img preview tidak ditemukan!');
+          }
+        };
+        img._fotoPreviewBound = true;
+      }
+    });
+  }
+  // Panggil saat load dan setelah renderTable
+  attachFotoThumbnailActions();
+  attachDeleteFotoActions(); // Tambah handler hapus foto
+  // Patch renderTable agar attachFotoThumbnailActions dipanggil setiap render
+  if (window.renderTable) {
+    const origRenderTable = window.renderTable;
+    window.renderTable = function() {
+       origRenderTable.apply(this, arguments);
+       attachFotoThumbnailActions();
+       attachDeleteFotoActions();
+    };
+  } else {
+    console.warn('[WARN] window.renderTable tidak ditemukan saat DOMContentLoaded');
+  }
+  // Fallback: gunakan MutationObserver jika patch gagal
+  const tbody = document.getElementById('pemakamanTableBody');
+  if (tbody) {
+    const observer = new MutationObserver(() => {
+      attachFotoThumbnailActions();
+    });
+    observer.observe(tbody, { childList: true, subtree: true });
+  }
+  // Tutup modal jika klik tombol close atau area gelap
+  const fotoModal = document.getElementById('fotoPreviewModal');
+  const closeBtn = document.getElementById('closeFotoPreview');
+  if (fotoModal && closeBtn) {
+    closeBtn.onclick = () => fotoModal.classList.add('hidden');
+    fotoModal.addEventListener('click', (e) => {
+      if (e.target === fotoModal) fotoModal.classList.add('hidden');
+    });
+  }
+});
+
+</script>
+<script src="./attachCheckAllAndDeleteSelected.js"></script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-analytics.js";
+  import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+
+  // Use firebaseConfig from the first module script
+  const analytics = getAnalytics(window.app);
+
+  // PAGINATION VARIABEL GLOBAL
+  let allData = [];
+  let currentPage = 1;
+  let currentFilter = '';
+
+  async function loadPemakaman(filter = '') {
+    const tbody = document.getElementById('pemakamanTableBody');
+    tbody.innerHTML = '<tr><td colspan="7" class="p-3 text-center text-gray-400">Memuat data...</td></tr>';
+    try {
+      allData = [];
+      if (!db) {
+        throw new Error('Firestore belum terinisialisasi (db null)');
+      }
+      const querySnapshot = await getDocs(collection(db, "pemakaman"));
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        allData.push({id: doc.id, ...data});
+      });
+      currentFilter = filter;
+      currentPage = 1;
+      renderTable();
+      // Log data untuk debug
+      console.log('Data loaded:', allData.map(d=>d.tanggalMeninggal));
+    } catch (err) {
+      console.error('Gagal memuat data:', err);
+      tbody.innerHTML = `<tr><td colspan="7" class="p-3 text-center text-red-400">Gagal memuat data: ${err && err.message ? err.message : err}</td></tr>`;
+    }
+  }
+
+  function renderTable() {
+    // SORTING
+    const sortMenu = document.getElementById('sortMenu')?.value || 'namaAz';
+    const tbody = document.getElementById('pemakamanTableBody');
+    // Filter
+    const lowerFilter = currentFilter.trim().toLowerCase();
+    const filtered = allData.filter((data) => {
+      const searchString = [
+        data.namaAlmarhum,
+        data.ahliWaris,
+        data.tanggalMeninggal,
+        data.alamat,
+        data.lokasiMakam?.blok,
+        data.lokasiMakam?.blad,
+        data.lokasiMakam?.nomor
+      ].map(x => (x||'').toString().toLowerCase()).join(' ');
+      return !lowerFilter || searchString.includes(lowerFilter);
+    });
+    // Sorting
+    // Helper: parse tanggal Indonesia DD/MM/YYYY atau YYYY-MM-DD
+    function parseDateIndo(str) {
+      if (!str || typeof str !== 'string') return null;
+      if (str.includes('-')) {
+        const d = new Date(str);
+        return isNaN(d) ? null : d;
+      }
+      if (str.includes('/')) {
+        const [d, m, y] = str.split('/');
+        const dt = new Date(`${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`);
+        return isNaN(dt) ? null : dt;
+      }
+      const dt = new Date(str);
+      return isNaN(dt) ? null : dt;
+    }
+    console.log('Sebelum sort:', filtered.map(d=>d.tanggalMeninggal));
+    filtered.sort((a, b) => {
+      if (sortMenu === 'namaAz') {
+        // Sort by Nama Almarhum A-Z
+        const valA = (a.namaAlmarhum || '').toLowerCase();
+        const valB = (b.namaAlmarhum || '').toLowerCase();
+        if (valA < valB) return -1;
+        if (valA > valB) return 1;
+        return 0;
+      } else if (sortMenu === 'tanggalTerbaru' || sortMenu === 'tanggalTerlama') {
+        // Sort by tanggalMeninggal
+        const dateA = parseDateIndo(a.tanggalMeninggal);
+        const dateB = parseDateIndo(b.tanggalMeninggal);
+        // Handle invalid/missing dates: treat as oldest
+        if (!dateA && !dateB) return 0;
+        if (!dateA) return 1; // Data tanpa tanggal di bawah
+        if (!dateB) return -1;
+        return sortMenu === 'tanggalTerbaru' ? dateB - dateA : dateA - dateB;
+      }
+      return 0;
+    });
+    console.log('Setelah sort:', filtered.map(d=>d.tanggalMeninggal));
+    // Paginasi
+    // Ambil perPage dari value dropdown
+    const perPageSelect = document.getElementById('perPageSelect');
+    let perPage = 10;
+    if (perPageSelect) {
+      perPage = parseInt(perPageSelect.value) || 10;
+    }
+    const total = filtered.length;
+    const totalPage = Math.max(1, Math.ceil(total/perPage));
+    if (currentPage > totalPage) currentPage = totalPage;
+    const startIdx = (currentPage-1)*perPage;
+    const endIdx = Math.min(startIdx+perPage, total);
+    console.log({perPage, startIdx, endIdx, total, totalPage});
+    let rows = '';
+    for(let i=startIdx; i<endIdx; i++) {
+      const data = filtered[i];
+      rows += `<tr class="border-b" data-id="${data.id}" data-fotopublicid="${data.fotoPublicId || ''}" data-fotourl="${data.fotoUrl || ''}">
+        <td class="p-3 text-center">
+          <input type="checkbox" class="rowCheckbox" data-id="${data.id}" />
+        </td>
+        <td class="p-3 break-words max-w-xs">${i+1}</td>
+        <td class="p-3 break-words max-w-xs font-medium text-[#1f2937]" data-field="namaAlmarhum">${data.namaAlmarhum || ''}</td>
+        <td class="p-3 break-words max-w-xs text-gray-500" data-field="ahliWaris">${data.ahliWaris || ''}</td>
+        <td class="p-3 break-words max-w-xs text-gray-500" data-field="tanggalMeninggal">${data.tanggalMeninggal || ''}</td>
+        <td class="p-3 break-words max-w-xs text-gray-500" data-field="alamat">${data.alamat || ''}</td>
+        <td class="p-3 break-words max-w-xs text-gray-500" data-field="lokasiMakam" data-blok="${data.lokasiMakam && typeof data.lokasiMakam === 'object' ? (data.lokasiMakam.blok || '') : (data.blok || '')}" data-blad="${data.lokasiMakam && typeof data.lokasiMakam === 'object' ? (data.lokasiMakam.blad || '') : (data.blad || '')}" data-nomor="${data.lokasiMakam && typeof data.lokasiMakam === 'object' ? (data.lokasiMakam.nomor || '') : (data.nomor || '')}">Blok ${data.lokasiMakam && typeof data.lokasiMakam === 'object' ? (data.lokasiMakam.blok || '') : (data.blok || '')}, Blad ${data.lokasiMakam && typeof data.lokasiMakam === 'object' ? (data.lokasiMakam.blad || '') : (data.blad || '')}, Nomor ${data.lokasiMakam && typeof data.lokasiMakam === 'object' ? (data.lokasiMakam.nomor || '') : (data.nomor || '')}</td>
+        <td class="p-3 text-center">
+           ${data.fotoUrl 
+            ? `<div class="relative inline-block group"><img src="${data.fotoUrl}" alt="Foto Makam" class="w-14 h-14 object-cover rounded shadow border border-gray-200 cursor-pointer foto-thumbnail" /><button type="button" class="delete-foto-btn absolute -top-2 -right-2 bg-white border border-gray-300 rounded-full w-6 h-6 flex items-center justify-center shadow text-gray-500 text-base opacity-80 hover:bg-red-500 hover:text-white transition hidden" title="Hapus Foto">&times;</button></div>`
+            : `<div class="flex flex-col items-center justify-center min-h-[56px]">
+                <button type="button" class="upload-foto-btn hidden editing:inline-flex items-center justify-center w-8 h-8 bg-blue-100 border border-blue-300 rounded-lg hover:bg-blue-500 hover:text-white text-blue-600 text-lg transition mx-auto" title="Upload Foto">
+                  <svg xmlns='http://www.w3.org/2000/svg' class='w-6 h-6 mx-auto block' fill='none' viewBox='0 0 24 24' stroke='currentColor'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5-5m0 0l5 5m-5-5v12' /></svg>
+                </button>
+                <input type="file" accept="image/*" class="hidden upload-foto-input" />
+              </div>`}
+        </td>
+        <td class="p-3 break-words max-w-xs flex gap-2" data-actions>
+          <button class="edit-btn" title="Edit"> <!-- Pencil -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-500 hover:text-blue-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536M9 13h3l8-8a2.828 2.828 0 00-4-4l-8 8v3zm0 0v3h3" /></svg>
+          </button>
+          <button class="delete-btn" title="Delete"> <!-- Trash -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-red-500 hover:text-red-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3m-7 0h8" /></svg>
+          </button>
+        </td>
+      </tr>`;
+    }
+    tbody.innerHTML = rows || `<tr><td colspan="9" class="p-3 text-center text-gray-400">Tidak ada data</td></tr>`;
+    // Update info bawah
+    const infoBottom = document.getElementById('showingInfoBottom');
+    if (infoBottom) {
+      infoBottom.textContent = total
+        ? `Menampilkan ${total===0?0:startIdx+1} sampai ${endIdx} dari ${total} data`
+        : 'Menampilkan 0 data';
+    }
+    // Update info atas
+    const dataCountTop = document.getElementById('dataCountTop');
+    if (dataCountTop) {
+      dataCountTop.textContent = `dari ${total} data`;
+    }
+    // Enable/disable prev/next bawah
+    
+    
+    if (prevBtnBottom) prevBtnBottom.disabled = currentPage<=1;
+    if (nextBtnBottom) nextBtnBottom.disabled = currentPage>=totalPage;
+
+    if (typeof attachCheckAllAndDeleteSelected === 'function') attachCheckAllAndDeleteSelected();
+    if (typeof attachRowActions === 'function') attachRowActions();
+  }
+
+  // MODAL INPUT DATA
+  const openInputModalBtn = document.getElementById('openInputModalBtn');
+
+// Fungsi hapus massal
+document.addEventListener('DOMContentLoaded', function() {
+  window.deleteMultipleRows = async function(ids) {
+    if (!Array.isArray(ids) || ids.length === 0) return;
+    const { doc, deleteDoc } = await import('https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js');
+    const db = window.db || (window.firebase && window.firebase.firestore && window.firebase.firestore()) || undefined;
+    if (!db) {
+      alert('Database tidak terinisialisasi!');
+      return;
+    }
+    window.showLoadingPopup('Menghapus data...');
+    let errorCount = 0;
+    for (const id of ids) {
+      try {
+        await deleteDoc(doc(db, 'pemakaman', id));
+      } catch (e) {
+        errorCount++;
+        console.error('Gagal hapus id', id, e);
+      }
+    }
+    window.hideLoadingPopup();
+    if (errorCount > 0) {
+      alert(errorCount + ' data gagal dihapus.');
+    } else {
+      window.showSuccessPopup('Data berhasil dihapus!');
+    }
+    await loadPemakaman();
+  };
+});
+  const inputModal = document.getElementById('inputModal');
+  const closeInputModalBtn = document.getElementById('closeInputModalBtn');
+  const inputFormModal = document.getElementById('inputFormModal');
+
+  // Preview Foto Modal Input & Button Animasi
+  const fotoInput = document.getElementById('fotoModal');
+  const previewFoto = document.getElementById('previewFotoModal');
+  const btnChooseFoto = document.getElementById('btnChooseFoto');
+  const labelFotoModal = document.getElementById('labelFotoModal');
+  const previewFotoWrapper = document.getElementById('previewFotoWrapper');
+  const btnRemoveFoto = document.getElementById('btnRemoveFoto');
+  if (btnChooseFoto && fotoInput) {
+    btnChooseFoto.addEventListener('click', function() {
+      fotoInput.click();
+    });
+  }
+  if (fotoInput && previewFoto && labelFotoModal && previewFotoWrapper) {
+    fotoInput.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        labelFotoModal.textContent = file.name;
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+          previewFoto.src = ev.target.result;
+          previewFotoWrapper.classList.remove('hidden');
+        };
+        reader.readAsDataURL(file);
+      } else {
+        labelFotoModal.textContent = 'Foto makam';
+        previewFoto.src = '#';
+        previewFotoWrapper.classList.add('hidden');
+      }
+    });
+    if (btnRemoveFoto) {
+      btnRemoveFoto.addEventListener('click', function() {
+        fotoInput.value = '';
+        previewFoto.src = '#';
+        previewFotoWrapper.classList.add('hidden');
+        labelFotoModal.textContent = 'Foto makam';
+      });
+    }
+  }
+
+
+  if (openInputModalBtn && inputModal && closeInputModalBtn && inputFormModal) {
+    openInputModalBtn.onclick = () => {
+      // Reset preview foto, label, dan input file setiap buka modal
+      const fotoInput = document.getElementById('fotoModal');
+      const previewFoto = document.getElementById('previewFotoModal');
+      const labelFotoModal = document.getElementById('labelFotoModal');
+      const previewFotoWrapper = document.getElementById('previewFotoWrapper');
+      if (fotoInput) fotoInput.value = '';
+      if (previewFoto) previewFoto.src = '#';
+      if (labelFotoModal) labelFotoModal.textContent = 'Foto makam';
+      if (previewFotoWrapper) previewFotoWrapper.classList.add('hidden');
+      inputModal.classList.remove('hidden');
+    };
+    closeInputModalBtn.onclick = () => inputModal.classList.add('hidden');
+    inputModal.addEventListener('click', (e) => { if (e.target === inputModal) inputModal.classList.add('hidden'); });
+    inputFormModal.onsubmit = async function(e) {
+      e.preventDefault();
+      // Ambil data
+      const nama = document.getElementById('namaModal').value.trim();
+      const ahliWaris = document.getElementById('ahliWarisModal').value.trim();
+      const tanggalMeninggal = document.getElementById('tanggalMeninggalModal').value;
+      const alamat = document.getElementById('alamatModal').value.trim();
+      const blok = document.getElementById('blokModal').value.trim();
+      const blad = document.getElementById('bladModal').value.trim();
+      const nomor = document.getElementById('nomorModal').value.trim();
+      const fotoFile = document.getElementById('fotoModal').files[0];
+      // Validasi
+      // Validasi form
+      if (!nama || !ahliWaris || !tanggalMeninggal || !alamat || !blok || !blad || !nomor) {
+        const errorPopup = document.getElementById('errorPopup');
+        if (errorPopup) {
+          errorPopup.querySelector('h2').textContent = 'Data harus diisi!';
+          errorPopup.querySelector('button').focus();
+          errorPopup.classList.remove('hidden');
+        }
+        return;
+      }
+      document.getElementById('loadingPopup').classList.remove('hidden');
+      let fotoUrl = '';
+      let fotoPublicId = '';
+      if (fotoFile) {
+        try {
+          const formData = new FormData();
+          formData.append('file', fotoFile);
+          formData.append('upload_preset', 'simpam_upload');
+          const cloudName = 'dxjncfagf';
+          const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+            method: 'POST',
+            body: formData
+          });
+          const data = await res.json();
+          if (!data.secure_url) throw new Error(data.error?.message || 'Upload foto gagal');
+          fotoUrl = data.secure_url;
+          fotoPublicId = data.public_id || '';
+        } catch (err) {
+          document.getElementById('loadingPopup').classList.add('hidden');
+          const errorPopup = document.getElementById('errorPopup');
+          if (errorPopup) {
+            errorPopup.querySelector('h2').textContent = 'Upload foto gagal: ' + (err && err.message ? err.message : err);
+            errorPopup.classList.remove('hidden');
+            errorPopup.querySelector('button').focus();
+          }
+          return;
+        }
+      }
+      // Simpan ke Firestore
+      try {
+        const { collection, addDoc } = await import('https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js');
+        await addDoc(collection(window.db, 'pemakaman'), {
+          namaAlmarhum: nama,
+          ahliWaris: ahliWaris,
+          tanggalMeninggal: tanggalMeninggal,
+          alamat: alamat,
+          lokasiMakam: { blok, blad, nomor },
+          fotoUrl: fotoUrl,
+          fotoPublicId: fotoPublicId
+        });
+        inputModal.classList.add('hidden');
+        inputFormModal.reset();
+        // Reset preview foto
+        if (fotoInput) fotoInput.value = '';
+        if (previewFoto) previewFoto.src = '#';
+        if (labelFotoModal) labelFotoModal.textContent = 'Foto makam';
+        if (previewFotoWrapper) previewFotoWrapper.classList.add('hidden');
+        document.getElementById('loadingPopup').classList.add('hidden');
+        document.getElementById('successPopup').classList.remove('hidden');
+        setTimeout(() => {
+          document.getElementById('successPopup').classList.add('hidden');
+        }, 1500);
+        await loadPemakaman();
+      } catch (err) {
+        document.getElementById('loadingPopup').classList.add('hidden');
+        const errorPopup = document.getElementById('errorPopup');
+        if (errorPopup) {
+          errorPopup.querySelector('h2').textContent = 'Gagal simpan data: ' + (err && err.message ? err.message : err);
+          errorPopup.classList.remove('hidden');
+          errorPopup.querySelector('button').focus();
+        }
+      }
+    }
+  }
+
+  // EVENT LISTENERS
+  // Sort menu listener
+  document.addEventListener('DOMContentLoaded', function() {
+    const sortMenu = document.getElementById('sortMenu');
+    if (sortMenu) sortMenu.addEventListener('change', renderTable);
+  });
+  const searchInput = document.getElementById('searchInput');
+  if (searchInput) {
+    searchInput.addEventListener('input', function() {
+      currentFilter = this.value;
+      currentPage = 1;
+      renderTable();
+    });
+  }
+  // Jumlah per halaman
+  const perPageSelect = document.getElementById('perPageSelect');
+  if (perPageSelect) {
+    perPageSelect.addEventListener('change', function() {
+      currentPage = 1;
+      renderTable();
+    });
+  }
+  // Paginasi bawah
+  const prevBtnBottom = document.getElementById('prevPageBtnBottom');
+  const nextBtnBottom = document.getElementById('nextPageBtnBottom');
+  if (prevBtnBottom) {
+    prevBtnBottom.addEventListener('click', function() {
+      if (currentPage > 1) {
+        currentPage--;
+        renderTable();
+      }
+    });
+  }
+  if (nextBtnBottom) {
+    nextBtnBottom.addEventListener('click', function() {
+      // Ambil nilai perPage dari select
+      const perPage = parseInt(document.getElementById('perPageSelect')?.value || 10, 10);
+      const total = allData.filter((data) => {
+        const searchString = [
+          data.namaAlmarhum,
+          data.ahliWaris,
+          data.tanggalMeninggal,
+          data.alamat,
+          data.lokasiMakam?.blok,
+          data.lokasiMakam?.blad,
+          data.lokasiMakam?.nomor
+        ].map(x => (x||'').toString().toLowerCase()).join(' ');
+        return !currentFilter.trim().toLowerCase() || searchString.includes(currentFilter.trim().toLowerCase());
+      }).length;
+      const totalPage = Math.max(1, Math.ceil(total/perPage));
+      // Debug log untuk membantu troubleshooting
+      console.log('[PAGING DEBUG] currentPage:', currentPage, 'total:', total, 'perPage:', perPage, 'totalPage:', totalPage);
+      if (currentPage < totalPage) {
+        currentPage++;
+        renderTable();
+      }
+    });
+  }
+  // Inisialisasi
+  loadPemakaman();
+
+  // Delete popup actions
+  document.getElementById('confirmDeleteBtn').onclick = async function() {
+    const id = window.deleteTargetId;
+    try {
+      const { doc, deleteDoc } = await import('https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js');
+      const dataToDelete = allData.find(d => d.id === id);
+      const fotoPublicId = dataToDelete && dataToDelete.fotoPublicId;
+      await deleteDoc(doc(db, 'pemakaman', id));
+    } catch(e) {
+      alert('Gagal hapus data: '+e.message);
+    }
+  };
+
+  document.getElementById('cancelDeleteBtn').onclick = function() {
+    document.getElementById('deletePopup').classList.add('hidden');
+    window.deleteTargetId = null;
+  };
+
+  // Close popup if click outside modal
+  document.getElementById('deletePopup').onclick = function(e) {
+    if (e.target === this) {
+      this.classList.add('hidden');
+      window.deleteTargetId = null;
+    }
+  };
+
+  // Tutup popup sukses manual
+  document.getElementById('closeSuccessPopup').onclick = function() {
+    document.getElementById('successPopup').classList.add('hidden');
+  };
+
+  // Export CSV handler
+  function exportCsvHandler() {
+    // Ambil data dari baris tabel yang sedang tampil
+    const tbody = document.getElementById('pemakamanTableBody');
+    if (!tbody) {
+      alert('Tidak ada data untuk diekspor!');
+      return;
+    }
+    const rows = Array.from(tbody.querySelectorAll('tr'));
+    if (rows.length === 0) {
+      alert('Tidak ada data untuk diekspor!');
+      return;
+    }
+    const headers = ['Nama Almarhum', 'Ahli Waris', 'Tanggal Meninggal', 'Alamat', 'Blok', 'Blad', 'Nomor', 'Foto URL'];
+    const dataRows = rows.map(tr => {
+      const tds = tr.querySelectorAll('td');
+      // Pastikan urutan field sesuai kolom tabel Anda!
+      // Misal: [No, Nama, Ahli Waris, Tanggal, Alamat, Lokasi, Foto, Aksi]
+      return [
+        tds[2]?.innerText.trim() || '', // Nama Almarhum
+        tds[3]?.innerText.trim() || '', // Ahli Waris
+        tds[4]?.innerText.trim() || '', // Tanggal Meninggal
+        tds[5]?.innerText.trim() || '', // Alamat
+        // Lokasi Makam format: "Blok XX, Blad YY, Nomor ZZ"
+        ...(tds[6]?.innerText.match(/Blok ([^,]*), Blad ([^,]*), Nomor (.*)/) || []).slice(1,4),
+        // Foto URL (ambil src img kalau ada)
+        tds[7]?.querySelector('img')?.src || ''
+      ];
+    });
+    const csv = [headers, ...dataRows].map(r => r.map(x => '"'+String(x).replace(/"/g,'""')+'"').join(',')).join('\r\n');
+    const blob = new Blob([csv], {type:'text/csv'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'data_pemakaman.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  // === Fungsi Edit/Delete Inline ===
+function attachRowActions() {
+  document.querySelectorAll('.edit-btn').forEach(btn => {
+    btn.onclick = function() {
+      const tr = btn.closest('tr');
+      if (tr.classList.contains('editing')) return;
+      tr.classList.add('editing');
+      attachDeleteFotoActions(); // <-- Pastikan handler tombol silang aktif setelah edit
+      // Handler tombol upload foto kecil (jika tidak ada foto)
+      const uploadBtn = tr.querySelector('.upload-foto-btn');
+      const uploadInput = tr.querySelector('.upload-foto-input');
+      if(uploadBtn && uploadInput) {
+        uploadBtn.classList.remove('hidden');
+        uploadBtn.onclick = function(e) {
+          e.stopPropagation();
+          uploadInput.click();
+        };
+        uploadInput.onchange = async function(e) {
+          const file = e.target.files[0];
+          if(file) {
+            // Upload ke Cloudinary
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', 'simpam_upload'); // Ganti dengan preset Anda
+            try {
+              const res = await fetch('https://api.cloudinary.com/v1_1/dxjncfagf/image/upload', {
+                method: 'POST',
+                body: formData
+              });
+              const dataCloud = await res.json();
+              if(dataCloud.secure_url) {
+                // Preview gambar di cell
+                const fotoCell = uploadBtn.closest('td');
+                if (fotoCell) {
+                  fotoCell.innerHTML = `<div class='relative inline-block group'><img src='${dataCloud.secure_url}' alt='Foto Makam' class='w-14 h-14 object-cover rounded shadow border border-gray-200 cursor-pointer foto-thumbnail' /><button type='button' class='delete-foto-btn absolute -top-2 -right-2 bg-white border border-gray-300 rounded-full w-6 h-6 flex items-center justify-center shadow text-gray-500 text-base opacity-80 hover:bg-red-500 hover:text-white transition' title='Hapus Foto'>&times;</button></div>`;
+                  tr.setAttribute('data-fotourl', dataCloud.secure_url);
+                  tr.setAttribute('data-fotopublicid', dataCloud.public_id || '');
+                  attachDeleteFotoActions();
+                  if (typeof attachFotoThumbnailActions === 'function') attachFotoThumbnailActions();
+                }
+              } else {
+                alert('Gagal upload ke Cloudinary!');
+              }
+            } catch (err) {
+              alert('Gagal upload ke Cloudinary: ' + err.message);
+            }
+          }
+        };
+      }
+      // Tampilkan tombol silang foto hanya pada baris ini
+      const fotoBtn = tr.querySelector('.delete-foto-btn');
+      if(fotoBtn) fotoBtn.classList.remove('hidden');
+      // Store original values
+      const original = {};
+      ['namaAlmarhum','ahliWaris','tanggalMeninggal','alamat','lokasiMakam'].forEach(f => {
+        const td = tr.querySelector(`[data-field="${f}"]`);
+        if(f === 'lokasiMakam') {
+          original['blok'] = td.getAttribute('data-blok') || '';
+          original['blad'] = td.getAttribute('data-blad') || '';
+          original['nomor'] = td.getAttribute('data-nomor') || '';
+          td.innerHTML = `
+            <div class="flex gap-1">
+              <input type="text" value="${original['blok']}" placeholder="Blok" class="border rounded px-2 py-1 w-16" id="edit-blok" />
+              <input type="text" value="${original['blad']}" placeholder="Blad" class="border rounded px-2 py-1 w-16" id="edit-blad" />
+              <input type="text" value="${original['nomor']}" placeholder="Nomor" class="border rounded px-2 py-1 w-20" id="edit-nomor" />
+            </div>`;
+        } else {
+          original[f] = td.textContent;
+          let inputHtml = '';
+          if(f==='tanggalMeninggal') {
+            inputHtml = `<input type="date" value="${td.textContent}" class="border rounded px-2 py-1 w-full" />`;
+          } else {
+            inputHtml = `<input type="text" value="${td.textContent}" class="border rounded px-2 py-1 w-full" />`;
+          }
+          td.innerHTML = inputHtml;
+        }
+      });
+      // Replace actions with check/cancel
+      const actions = tr.querySelector('[data-actions]');
+      actions.innerHTML = `
+        <button class="save-btn" title="Simpan">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-green-600 hover:text-green-800" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+        </button>
+        <button class="cancel-btn" title="Batal">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-500 hover:text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+        </button>
+      `;
+      // Save handler
+      actions.querySelector('.save-btn').onclick = async function() {
+        const id = tr.getAttribute('data-id');
+        const nama = tr.querySelector(`[data-field="namaAlmarhum"] input`).value;
+        const ahli = tr.querySelector(`[data-field="ahliWaris"] input`).value;
+        const tgl = tr.querySelector(`[data-field="tanggalMeninggal"] input`).value;
+        const alamat = tr.querySelector(`[data-field="alamat"] input`).value;
+        const blok = tr.querySelector(`#edit-blok`).value;
+        const blad = tr.querySelector(`#edit-blad`).value;
+        const nomor = tr.querySelector(`#edit-nomor`).value;
+        try {
+          const { doc, updateDoc } = await import('https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js');
+          await updateDoc(doc(db, 'pemakaman', id), {
+            namaAlmarhum: nama,
+            ahliWaris: ahli,
+            tanggalMeninggal: tgl,
+            alamat: alamat,
+            lokasiMakam: { blok, blad, nomor },
+            fotoUrl: tr.getAttribute('data-fotourl') || '',
+            fotoPublicId: tr.getAttribute('data-fotopublicid') || ''
+          });
+          // Tampilkan popup sukses
+          document.getElementById('successPopup').classList.remove('hidden');
+          setTimeout(() => {
+            document.getElementById('successPopup').classList.add('hidden');
+          }, 2500);
+          await loadPemakaman();
+        } catch(e) { alert('Gagal update data: '+e.message); }
+      };
+      // Cancel handler
+      actions.querySelector('.cancel-btn').onclick = function() {
+        ['namaAlmarhum','ahliWaris','tanggalMeninggal','alamat'].forEach(f => {
+          const td = tr.querySelector(`[data-field="${f}"]`);
+          td.innerHTML = original[f];
+        });
+        // Kembalikan lokasi makam
+        const tdLokasi = tr.querySelector('[data-field="lokasiMakam"]');
+        tdLokasi.innerHTML = `Blok ${original['blok']}, Blad ${original['blad']}, Nomor ${original['nomor']}`;
+        tdLokasi.setAttribute('data-blok', original['blok']);
+        tdLokasi.setAttribute('data-blad', original['blad']);
+        tdLokasi.setAttribute('data-nomor', original['nomor']);
+        tr.classList.remove('editing');
+        // Sembunyikan tombol silang foto
+        const fotoBtn = tr.querySelector('.delete-foto-btn');
+        if(fotoBtn) fotoBtn.classList.add('hidden');
+        // Sembunyikan tombol upload foto
+        const uploadBtn = tr.querySelector('.upload-foto-btn');
+        if(uploadBtn) uploadBtn.classList.add('hidden');
+        actions.innerHTML = `
+          <button class="edit-btn" title="Edit">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-500 hover:text-blue-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536M9 13h3l8-8a2.828 2.828 0 00-4-4l-8 8v3zm0 0v3h3" /></svg>
+          </button>
+          <button class="delete-btn" title="Delete">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-red-500 hover:text-red-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3m-7 0h8" /></svg>
+          </button>
+        `;
+        attachRowActions();
+      };
+    };
+  });
+  document.querySelectorAll('.delete-btn').forEach(btn => {
+    btn.onclick = function() {
+      const tr = btn.closest('tr');
+      const id = tr.getAttribute('data-id');
+      // Show animated popup
+      window.deleteTargetId = id;
+      document.getElementById('deletePopup').classList.remove('hidden');
+    };
+  });
+  // Delete popup actions
+  document.getElementById('confirmDeleteBtn').onclick = async function() {
+    const id = window.deleteTargetId;
+    try {
+      const { doc, deleteDoc } = await import('https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js');
+      await deleteDoc(doc(db, 'pemakaman', id));
+      document.getElementById('deletePopup').classList.add('hidden');
+      await loadPemakaman();
+    } catch(e) { alert('Gagal hapus data: '+e.message); }
+  };
+  document.getElementById('cancelDeleteBtn').onclick = function() {
+    document.getElementById('deletePopup').classList.add('hidden');
+    window.deleteTargetId = null;
+  };
+  // Close popup if click outside modal
+  document.getElementById('deletePopup').onclick = function(e) {
+    if (e.target === this) {
+      this.classList.add('hidden');
+      window.deleteTargetId = null;
+    }
+  };
+}
+// Tutup popup sukses manual
+if (document.getElementById('closeSuccessPopup')) {
+  document.getElementById('closeSuccessPopup').onclick = function() {
+    document.getElementById('successPopup').classList.add('hidden');
+  };
+}
+
+// Pasang event handler ke tombol Export CSV
+  const exportBtn = document.getElementById('exportCsvBtn');
+  if (exportBtn) exportBtn.onclick = exportCsvHandler;
+
+</script>
+<script>
+function showLoadingPopup(msg) {
+  const el = document.getElementById('loadingPopup');
+  if (el) {
+    el.classList.remove('hidden');
+    if (msg) {
+      const txt = el.querySelector('span, .msg, .text') || el;
+      if (txt) txt.textContent = msg;
+    }
+  }
+}
+function hideLoadingPopup() {
+  const el = document.getElementById('loadingPopup');
+  if (el) el.classList.add('hidden');
+}
+function showSuccessPopup(msg) {
+  const el = document.getElementById('successPopup');
+  if (el) {
+    el.classList.remove('hidden');
+    if (msg) {
+      // Ubah isi <p id="successPopupText"> jika ada
+      const txt = el.querySelector('#successPopupText') || el.querySelector('p') || el;
+      if (txt) txt.textContent = msg;
+    }
+    setTimeout(() => el.classList.add('hidden'), 2000);
+  }
+}
+
+window.showLoadingPopup = showLoadingPopup;
+window.hideLoadingPopup = hideLoadingPopup;
+window.showSuccessPopup = showSuccessPopup;
+
+function showErrorPopup(msg) {
+  alert(msg);
+}
+window.showErrorPopup = showErrorPopup;
+</script>
+</body>
+</html>
