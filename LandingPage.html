@@ -375,15 +375,32 @@
 
     // Smooth scroll for navbar links & active state
     document.addEventListener('DOMContentLoaded', function () {
-      // Navbar active animation
-      const navLinks = document.querySelectorAll('nav a.navbar-link');
-      const sections = ['hero', 'about', 'history', 'vision'].map(id => document.getElementById(id));
+      // Gabungkan navLinks desktop dan mobile, kecuali Login Admin
+      // Hanya pasangkan link yang section-nya benar-benar ada
+      const allNavLinks = Array.from(document.querySelectorAll('nav a.navbar-link')).filter(link => link.getAttribute('href') && link.getAttribute('href').startsWith('#'));
+      const navLinks = [];
+      const sections = [];
+      allNavLinks.forEach(link => {
+        const section = document.getElementById(link.getAttribute('href').slice(1));
+        if (section) {
+          navLinks.push(link);
+          sections.push(section);
+        }
+      });
 
       function setActiveLinkBySection() {
-        let index = sections.length - 1;
-        for (let i = 0; i < sections.length; i++) {
-          if (window.scrollY + 70 < sections[i].offsetTop) break;
-          index = i;
+        let index = 0;
+        // Jika sudah hampir di bawah, paksa ke section terakhir
+        if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 2) {
+          index = sections.length - 1;
+        } else {
+          // Cek posisi scroll terhadap setiap section
+          for (let i = 0; i < sections.length; i++) {
+            const sectionTop = sections[i].offsetTop - 80; // 80 = tinggi navbar + margin
+            if (window.scrollY >= sectionTop) {
+              index = i;
+            }
+          }
         }
         navLinks.forEach((link, i) => {
           if (i === index) {
@@ -394,7 +411,7 @@
         });
       }
 
-      // On click, set active immediately
+      // On click, set active dan scroll
       navLinks.forEach(function(anchor, idx) {
         anchor.addEventListener('click', function(e) {
           e.preventDefault();
@@ -406,12 +423,10 @@
               behavior: 'smooth'
             });
           }
-          navLinks.forEach(l => l.classList.remove('active-navbar-link'));
-          anchor.classList.add('active-navbar-link');
+          // Tidak perlu set class active di sini, biarkan event scroll yang mengatur
         });
       });
 
-      // On scroll, update active link
       window.addEventListener('scroll', setActiveLinkBySection);
       setActiveLinkBySection();
     });

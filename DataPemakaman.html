@@ -1,6 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
+    <!-- Firebase CDN -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
+  
+    <script>
+      // Firebase config
+      const firebaseConfig = {
+        apiKey: "AIzaSyDQslGoA5f6TNOJf0oDC0lAGXqHO5S0wsM",
+        authDomain: "simpam-dd361.firebaseapp.com",
+        projectId: "simpam-dd361",
+        storageBucket: "simpam-dd361.appspot.com",
+        messagingSenderId: "445192040754",
+        appId: "1:445192040754:web:35525c654299ca81cfe72b",
+        measurementId: "G-7FJ5FWW44N"
+      };
+      firebase.initializeApp(firebaseConfig);
+      const auth = firebase.auth();
+  
+      // Cek login sebelum tampilkan halaman
+      document.addEventListener("DOMContentLoaded", () => {
+        auth.onAuthStateChanged(user => {
+          if (!user) {
+            window.location.href = "LoginAdmin.html";
+          } else {
+            document.body.style.display = "block"; // ← munculkan isi halaman
+          }
+        });
+      });
+    </script>
+
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -295,16 +326,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
 import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
 
-// Firebase config
-const firebaseConfig = {
-  apiKey: "AIzaSyDQslGoA5f6TNOJf0oDC0lAGXqHO5S0wsM",
-  authDomain: "simpam-dd361.firebaseapp.com",
-  projectId: "simpam-dd361",
-  storageBucket: "simpam-dd361.appspot.com",
-  messagingSenderId: "445192040754",
-  appId: "1:445192040754:web:35525c654299ca81cfe72b",
-  measurementId: "G-7FJ5FWW44N"
-};
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
