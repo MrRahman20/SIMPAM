@@ -139,6 +139,28 @@
     };
   </script>
 </head>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyDQslGoA5f6TNOJf0oDC0lAGXqHO5S0wsM",
+  authDomain: "simpam-dd361.firebaseapp.com",
+  projectId: "simpam-dd361",
+   
+  };
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+
+  // Cek status login sebelum tampilkan halaman
+  auth.onAuthStateChanged(user => {
+    if (!user) {
+      // User belum login → redirect ke login
+      window.location.href = "Login.html";
+    }
+  });
+</script>
+
 <body>
   <div class="bg-[#ffffff] min-h-screen w-full relative">
     <!-- Navigation -->
