@@ -137,7 +137,8 @@
           <div class="bg-white rounded-xl shadow-lg w-full max-w-2xl p-8 relative animate-bounce-in overflow-y-auto max-h-[100vh] sm:max-h-none sm:overflow-visible">
             <button id="closeInputModalBtn" class="absolute top-4 right-4 text-gray-500 hover:text-red-500 text-2xl font-bold">&times;</button>
             <h2 class="text-2xl font-bold text-[#1f2937] mb-2 text-center">Input Data Pemakaman</h2>
-            <form class="space-y-5 mt-4" id="inputFormModal">
+            <form class="mt-4" id="inputFormModal">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label class="block text-[#374151] font-medium text-sm mb-1" for="namaModal">Nama Almarhum</label>
                 <input id="namaModal" name="nama" type="text" maxlength="50" class="rounded-lg border border-[#d1d5db] w-full h-10 px-3 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="Nama Almarhum" />
@@ -147,8 +148,16 @@
                 <input id="ahliWarisModal" name="ahliWaris" type="text" maxlength="50" class="rounded-lg border border-[#d1d5db] w-full h-10 px-3 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="Ahli Waris" />
               </div>
               <div>
+                <label class="block text-[#374151] font-medium text-sm mb-1" for="nomorHpModal">Nomor Handphone</label>
+                <input id="nomorHpModal" name="nomorHp" type="tel" maxlength="20" class="rounded-lg border border-[#d1d5db] w-full h-10 px-3 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="Nomor Handphone" />
+              </div>
+              <div>
                 <label class="block text-[#374151] font-medium text-sm mb-1" for="tanggalMeninggalModal">Tanggal Meninggal</label>
                 <input id="tanggalMeninggalModal" name="tanggalMeninggal" type="date" class="rounded-lg border border-[#d1d5db] w-full h-10 px-3 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-400" />
+              </div>
+              <div>
+                <label class="block text-[#374151] font-medium text-sm mb-1" for="tanggalDikuburModal">Tanggal Dikubur</label>
+                <input id="tanggalDikuburModal" name="tanggalDikubur" type="date" class="rounded-lg border border-[#d1d5db] w-full h-10 px-3 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-400" />
               </div>
               <div>
                 <label class="block text-[#374151] font-medium text-sm mb-1" for="fotoModal">Upload Foto makam</label>
@@ -164,11 +173,11 @@
 </div>
                 </div>
               </div>
-              <div>
+              <div class="md:col-span-2">
                 <label class="block text-[#374151] font-medium text-sm mb-1" for="alamatModal">Alamat</label>
                 <textarea id="alamatModal" name="alamat" rows="3" maxlength="200" class="rounded-lg border border-[#d1d5db] w-full px-3 py-1.5 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none" placeholder="Alamat"></textarea>
               </div>
-              <div>
+              <div class="md:col-span-2">
                 <label class="block text-[#374151] font-medium text-sm mb-2">Lokasi Makam</label>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
@@ -185,11 +194,12 @@
                   </div>
                 </div>
               </div>
-              <div class="flex flex-col md:flex-row gap-4 mt-6">
+              <div class="md:col-span-2 flex flex-col md:flex-row gap-4 mt-6">
                 <button type="reset" class="rounded-lg border border-[#d1d5db] bg-white text-[#374151] font-medium text-base h-12 w-full md:w-1/2 hover:bg-gray-100 transition">Bersihkan</button>
                 <button type="submit" class="rounded-lg bg-[#2563eb] text-white font-medium text-base h-12 w-full md:w-1/2 shadow-md hover:bg-blue-700 transition">Simpan Data</button>
               </div>
-            </form>
+    </div>
+  </form>
           </div>
         </div>
       <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
@@ -223,7 +233,9 @@
               <th class="p-3 text-left uppercase font-semibold">NO</th>
               <th class="p-3 text-left uppercase font-semibold">NAMA ALMARHUM</th>
               <th class="p-3 text-left uppercase font-semibold">AHLI WARIS</th>
+              <th class="p-3 text-left uppercase font-semibold">NOMOR HP</th>
               <th class="p-3 text-left uppercase font-semibold">TANGGAL MENINGGAL</th>
+              <th class="p-3 text-left uppercase font-semibold">TANGGAL DIKUBUR</th>
               <th class="p-3 text-left uppercase font-semibold">ALAMAT</th>
               <th class="p-3 text-left uppercase font-semibold">LOKASI MAKAM</th>
               <th class="p-3 text-left uppercase font-semibold">FOTO</th>
@@ -553,7 +565,9 @@ document.addEventListener('DOMContentLoaded', function() {
         <td class="p-3 break-words max-w-xs">${i+1}</td>
         <td class="p-3 break-words max-w-xs font-medium text-[#1f2937]" data-field="namaAlmarhum">${data.namaAlmarhum || ''}</td>
         <td class="p-3 break-words max-w-xs text-gray-500" data-field="ahliWaris">${data.ahliWaris || ''}</td>
+        <td class="p-3 break-words max-w-xs text-gray-500" data-field="nomorHp">${data.nomorHp || ''}</td>
         <td class="p-3 break-words max-w-xs text-gray-500" data-field="tanggalMeninggal">${data.tanggalMeninggal || ''}</td>
+        <td class="p-3 break-words max-w-xs text-gray-500" data-field="tanggalDikubur">${data.tanggalDikubur || ''}</td>
         <td class="p-3 break-words max-w-xs text-gray-500" data-field="alamat">${data.alamat || ''}</td>
         <td class="p-3 break-words max-w-xs text-gray-500" data-field="lokasiMakam" data-blok="${data.lokasiMakam && typeof data.lokasiMakam === 'object' ? (data.lokasiMakam.blok || '') : (data.blok || '')}" data-blad="${data.lokasiMakam && typeof data.lokasiMakam === 'object' ? (data.lokasiMakam.blad || '') : (data.blad || '')}" data-nomor="${data.lokasiMakam && typeof data.lokasiMakam === 'object' ? (data.lokasiMakam.nomor || '') : (data.nomor || '')}">Blok ${data.lokasiMakam && typeof data.lokasiMakam === 'object' ? (data.lokasiMakam.blok || '') : (data.blok || '')}, Blad ${data.lokasiMakam && typeof data.lokasiMakam === 'object' ? (data.lokasiMakam.blad || '') : (data.blad || '')}, Nomor ${data.lokasiMakam && typeof data.lokasiMakam === 'object' ? (data.lokasiMakam.nomor || '') : (data.nomor || '')}</td>
         <td class="p-3 text-center">
@@ -695,7 +709,9 @@ document.addEventListener('DOMContentLoaded', function() {
       // Ambil data
       const nama = document.getElementById('namaModal').value.trim();
       const ahliWaris = document.getElementById('ahliWarisModal').value.trim();
+      const nomorHp = document.getElementById('nomorHpModal').value.trim();
       const tanggalMeninggal = document.getElementById('tanggalMeninggalModal').value;
+      const tanggalDikubur = document.getElementById('tanggalDikuburModal').value;
       const alamat = document.getElementById('alamatModal').value.trim();
       const blok = document.getElementById('blokModal').value.trim();
       const blad = document.getElementById('bladModal').value.trim();
@@ -703,7 +719,7 @@ document.addEventListener('DOMContentLoaded', function() {
       const fotoFile = document.getElementById('fotoModal').files[0];
       // Validasi
       // Validasi form
-      if (!nama || !ahliWaris || !tanggalMeninggal || !alamat || !blok || !blad || !nomor) {
+      if (!nama || !ahliWaris || !nomorHp || !tanggalMeninggal || !tanggalDikubur || !alamat || !blok || !blad || !nomor) {
         const errorPopup = document.getElementById('errorPopup');
         if (errorPopup) {
           errorPopup.querySelector('h2').textContent = 'Data harus diisi!';
@@ -746,7 +762,9 @@ document.addEventListener('DOMContentLoaded', function() {
         await addDoc(collection(window.db, 'pemakaman'), {
           namaAlmarhum: nama,
           ahliWaris: ahliWaris,
+          nomorHp: nomorHp,
           tanggalMeninggal: tanggalMeninggal,
+          tanggalDikubur: tanggalDikubur,
           alamat: alamat,
           lokasiMakam: { blok, blad, nomor },
           fotoUrl: fotoUrl,

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+
+>>>>>>> 0e57793 (update nomor hp dan tanggal dikubur)
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,6 +14,7 @@
   <script src="https://cdn.tailwindcss.com/3.2.0"></script>
   <script src="./tailwind.config.js"></script>
   <link rel="icon" type="image/png" href="DataPemakaman/_4-s-ld-bmo-c-400-x-400-removebg-preview-10.png">
+<<<<<<< HEAD
 
     <!-- ✅ Meta tag OG -->
   <meta property="og:title" content="SIMPAM - Sistem Informasi Pemakaman" />
@@ -23,6 +28,25 @@
   <meta name="twitter:title" content="SIMPAM - Sistem Informasi Pemakaman" />
   <meta name="twitter:description" content="Aplikasi digitalisasi pendataan pemakaman" />
   <meta name="twitter:image" content="https://res.cloudinary.com/dxjncfagf/image/upload/v1752257656/Simpam_jrg3rm.png" />
+=======
+  
+  <!-- 🌐 Open Graph Meta (Facebook, WhatsApp, LinkedIn, dsb) -->
+  <meta property="og:title" content="SIMPAM - Sistem Informasi Pemakaman" />
+  <meta property="og:description" content="Kelola data pemakaman secara digital dan efisien." />
+  <meta property="og:image" content="https://res.cloudinary.com/dxjncfagf/image/upload/v1752257656/Simpam_jrg3rm.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:url" content="https://simpam.vercel.app" />
+  <meta property="og:type" content="website" />
+
+  <!-- 🐦 Twitter Card Meta -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="SIMPAM - Sistem Informasi Pemakaman" />
+  <meta name="twitter:description" content="Kelola data pemakaman secara digital dan efisien." />
+  <meta name="twitter:image" content="https://res.cloudinary.com/dxjncfagf/image/upload/v1752257656/Simpam_jrg3rm.png" />
+
+>>>>>>> 0e57793 (update nomor hp dan tanggal dikubur)
   
   <style>
     a,
@@ -357,10 +381,12 @@
       <div class="flex flex-col items-center">
         <img id="modalFotoAlmarhum" src="" alt="Foto Almarhum" class="w-80 h-80 object-cover rounded-xl mb-6 border-2 border-gray-300" />
         <div class="font-bold text-4xl text-[#2563eb] mb-4 text-center" id="modalNamaAlmarhum"></div>
-        <div class="text-gray-700 text-xl mb-2 text-center"><span class="font-semibold">Ahli Waris:</span><br><span id="modalAhliWaris"></span></div>
-        <div class="text-gray-700 text-xl mb-2 text-center"><span class="font-semibold">Tanggal Meninggal:</span><br><span id="modalTanggalMeninggal"></span></div>
-        <div class="text-gray-700 text-xl mb-2 text-center"><span class="font-semibold">Alamat:</span><br><span id="modalAlamat"></span></div>
-        <div class="text-gray-700 text-xl mb-2 text-center"><span class="font-semibold">Lokasi Makam:</span><br><span id="modalLokasiMakam"></span></div>
+          <div class="text-gray-700 text-xl mb-2 text-center"><span class="font-semibold">Ahli Waris:</span><br><span id="modalAhliWaris"></span></div>
+          <div class="text-gray-700 text-xl mb-2 text-center"><span class="font-semibold">Nomor HP:</span><br><span id="modalNomorHp"></span></div>
+          <div class="text-gray-700 text-xl mb-2 text-center"><span class="font-semibold">Tanggal Meninggal:</span><br><span id="modalTanggalMeninggal"></span></div>
+          <div class="text-gray-700 text-xl mb-2 text-center"><span class="font-semibold">Tanggal Dikubur:</span><br><span id="modalTanggalDikubur"></span></div>
+          <div class="text-gray-700 text-xl mb-2 text-center"><span class="font-semibold">Alamat:</span><br><span id="modalAlamat" class="break-all"></span></div>
+          <div class="text-gray-700 text-xl mb-2 text-center"><span class="font-semibold">Lokasi Makam:</span><br><span id="modalLokasiMakam"></span></div>
       </div>
     </div>
   </div>
@@ -531,7 +557,7 @@ function filterAndShowResults() {
           <div class="rounded-xl border shadow p-4 bg-white flex flex-col gap-1 max-w-xs w-full mx-auto">
             <div class="font-bold text-lg text-[#2563eb]">${data.namaAlmarhum}</div>
             <div class="text-sm text-gray-600">Ahli Waris: ${data.ahliWaris}</div>
-            <div class="text-sm text-gray-600">Tanggal Meninggal: ${data.tanggalMeninggal}</div>
+            <div class="text-sm text-gray-600">Tanggal Meninggal: <br>${data.tanggalMeninggal}</div>
             <button class="mt-3 bg-[#2563eb] hover:bg-[#1d4ed8] text-white px-4 py-2 rounded transition-colors text-sm font-semibold w-full btn-detail-almarhum" data-index="${i}">Selengkapnya</button>
           </div>
         `;
@@ -557,7 +583,9 @@ const closeModalBtn = document.getElementById('closeModalDetail');
 const modalFoto = document.getElementById('modalFotoAlmarhum');
 const modalNama = document.getElementById('modalNamaAlmarhum');
 const modalAhliWaris = document.getElementById('modalAhliWaris');
+const modalNomorHp = document.getElementById('modalNomorHp');
 const modalTanggalMeninggal = document.getElementById('modalTanggalMeninggal');
+const modalTanggalDikubur = document.getElementById('modalTanggalDikubur');
 const modalAlamat = document.getElementById('modalAlamat');
 const modalLokasiMakam = document.getElementById('modalLokasiMakam');
 
@@ -566,7 +594,9 @@ function showDetailAlmarhum(data) {
   modalFoto.src = data.fotoUrl || 'DataPemakaman/batunissnvector.png';
   modalNama.textContent = data.namaAlmarhum || '-';
   modalAhliWaris.textContent = data.ahliWaris || '-';
+  modalNomorHp.textContent = data.nomorHp || '-';
   modalTanggalMeninggal.textContent = data.tanggalMeninggal || '-';
+  modalTanggalDikubur.textContent = data.tanggalDikubur || '-';
   modalAlamat.textContent = data.alamat || '-';
   let lokasi = '-';
   if (data.lokasiMakam) {
