@@ -900,20 +900,25 @@ document.addEventListener('DOMContentLoaded', function() {
       alert('Tidak ada data untuk diekspor!');
       return;
     }
-    const headers = ['Nama Almarhum', 'Ahli Waris', 'Tanggal Meninggal', 'Alamat', 'Blok', 'Blad', 'Nomor', 'Foto URL'];
+    const headers = ['Nama Almarhum', 'Ahli Waris', 'Nomor HP', 'Tanggal Meninggal', 'Tanggal Dikubur', 'Alamat', 'Blok', 'Blad', 'Nomor', 'Lokasi Makam', 'Foto URL'];
     const dataRows = rows.map(tr => {
       const tds = tr.querySelectorAll('td');
-      // Pastikan urutan field sesuai kolom tabel Anda!
-      // Misal: [No, Nama, Ahli Waris, Tanggal, Alamat, Lokasi, Foto, Aksi]
+      // Urutan kolom: [Pilih, No, Nama, Ahli Waris, Nomor HP, Tgl Meninggal, Tgl Dikubur, Alamat, Lokasi Makam, Foto, Aksi]
+      const lokasiText = tds[8]?.innerText.trim() || '';
+      // Ekstrak blok, blad, nomor dari lokasi makam
+      const lokasiMatch = lokasiText.match(/Blok ([^,]*), Blad ([^,]*), Nomor (.*)/) || [];
       return [
         tds[2]?.innerText.trim() || '', // Nama Almarhum
         tds[3]?.innerText.trim() || '', // Ahli Waris
-        tds[4]?.innerText.trim() || '', // Tanggal Meninggal
-        tds[5]?.innerText.trim() || '', // Alamat
-        // Lokasi Makam format: "Blok XX, Blad YY, Nomor ZZ"
-        ...(tds[6]?.innerText.match(/Blok ([^,]*), Blad ([^,]*), Nomor (.*)/) || []).slice(1,4),
-        // Foto URL (ambil src img kalau ada)
-        tds[7]?.querySelector('img')?.src || ''
+        tds[4]?.innerText.trim() || '', // Nomor HP
+        tds[5]?.innerText.trim() || '', // Tanggal Meninggal
+        tds[6]?.innerText.trim() || '', // Tanggal Dikubur
+        tds[7]?.innerText.trim() || '', // Alamat
+        lokasiMatch[1] || '', // Blok
+        lokasiMatch[2] || '', // Blad
+        lokasiMatch[3] || '', // Nomor
+        lokasiText, // Lokasi Makam (string lengkap)
+        tds[9]?.querySelector('img')?.src || '' // Foto URL
       ];
     });
     const csv = [headers, ...dataRows].map(r => r.map(x => '"'+String(x).replace(/"/g,'""')+'"').join(',')).join('\r\n');
