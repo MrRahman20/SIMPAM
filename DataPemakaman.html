@@ -661,80 +661,82 @@ document.addEventListener('DOMContentLoaded', function() {
   const inputFormModal = document.getElementById('inputFormModal');
 
   // --- Upload Foto Makam: Dua tombol (Ambil & Upload), satu preview/validasi ---
-const fotoCamera = document.getElementById('fotoCamera');
-const fotoGaleri = document.getElementById('fotoGaleri');
-const previewFoto = document.getElementById('previewFotoModal');
-const btnAmbilFoto = document.getElementById('btnAmbilFoto');
-const btnUploadFoto = document.getElementById('btnUploadFoto');
-const labelFotoModal = document.getElementById('labelFotoModal');
-const previewFotoWrapper = document.getElementById('previewFotoWrapper');
-const btnRemoveFoto = document.getElementById('btnRemoveFoto');
+  const fotoCamera = document.getElementById('fotoCamera');
+  const fotoGaleri = document.getElementById('fotoGaleri');
+  const previewFoto = document.getElementById('previewFotoModal');
+  const btnAmbilFoto = document.getElementById('btnAmbilFoto');
+  const btnUploadFoto = document.getElementById('btnUploadFoto');
+  const labelFotoModal = document.getElementById('labelFotoModal');
+  const previewFotoWrapper = document.getElementById('previewFotoWrapper');
+  const btnRemoveFoto = document.getElementById('btnRemoveFoto');
 
-// Trigger input kamera
-if (btnAmbilFoto && fotoCamera && !btnAmbilFoto.dataset.listenerAttached) {
-  btnAmbilFoto.addEventListener('click', function(e) {
-    e.preventDefault();
-    fotoCamera.click();
-  });
-  btnAmbilFoto.dataset.listenerAttached = 'true';
-}
-// Trigger input galeri
-if (btnUploadFoto && fotoGaleri && !btnUploadFoto.dataset.listenerAttached) {
-  btnUploadFoto.addEventListener('click', function(e) {
-    e.preventDefault();
-    fotoGaleri.click();
-  });
-  btnUploadFoto.dataset.listenerAttached = 'true';
-}
+  // Trigger input kamera
+  if (btnAmbilFoto && fotoCamera && !btnAmbilFoto.dataset.listenerAttached) {
+    btnAmbilFoto.addEventListener('click', function(e) {
+      e.preventDefault();
+      alert('[DEBUG] Tombol Ambil Foto diklik');
+      fotoCamera.click();
+    });
+    btnAmbilFoto.dataset.listenerAttached = 'true';
+  }
+  // Trigger input galeri
+  if (btnUploadFoto && fotoGaleri && !btnUploadFoto.dataset.listenerAttached) {
+    btnUploadFoto.addEventListener('click', function(e) {
+      e.preventDefault();
+      alert('[DEBUG] Tombol Upload Foto diklik');
+      fotoGaleri.click();
+    });
+    btnUploadFoto.dataset.listenerAttached = 'true';
+  }
 
-// Handler preview & validasi (bisa dipakai untuk dua input)
-function handleFotoChange(e) {
-  const file = e.target.files[0];
-  if (file) {
-    const maxSize = 2 * 1024 * 1024; // 2MB
-    if (file.size > maxSize) {
-      alert('Ukuran file foto maksimal 2MB!');
-      e.target.value = '';
+  // Handler preview & validasi (bisa dipakai untuk dua input)
+  function handleFotoChange(e) {
+    const file = e.target.files[0];
+    if (file) {
+      const maxSize = 2 * 1024 * 1024; // 2MB
+      if (file.size > maxSize) {
+        alert('Ukuran file foto maksimal 2MB!');
+        e.target.value = '';
+        labelFotoModal.textContent = 'Foto makam';
+        previewFoto.src = '#';
+        previewFotoWrapper.classList.add('hidden');
+        return;
+      }
+      labelFotoModal.textContent = file.name;
+      const reader = new FileReader();
+      reader.onload = function(ev) {
+        previewFoto.src = ev.target.result;
+        previewFotoWrapper.classList.remove('hidden');
+      };
+      reader.readAsDataURL(file);
+    } else {
       labelFotoModal.textContent = 'Foto makam';
       previewFoto.src = '#';
       previewFotoWrapper.classList.add('hidden');
-      return;
     }
-    labelFotoModal.textContent = file.name;
-    const reader = new FileReader();
-    reader.onload = function(ev) {
-      previewFoto.src = ev.target.result;
-      previewFotoWrapper.classList.remove('hidden');
-    };
-    reader.readAsDataURL(file);
-  } else {
-    labelFotoModal.textContent = 'Foto makam';
-    previewFoto.src = '#';
-    previewFotoWrapper.classList.add('hidden');
   }
-}
-// Event listener input kamera
-if (fotoCamera && !fotoCamera.dataset.listenerAttached) {
-  fotoCamera.addEventListener('change', handleFotoChange);
-  fotoCamera.dataset.listenerAttached = 'true';
-}
-// Event listener input galeri
-if (fotoGaleri && !fotoGaleri.dataset.listenerAttached) {
-  fotoGaleri.addEventListener('change', handleFotoChange);
-  fotoGaleri.dataset.listenerAttached = 'true';
-}
-// Event listener hapus foto
-if (btnRemoveFoto && !btnRemoveFoto.dataset.listenerAttached) {
-  btnRemoveFoto.addEventListener('click', function() {
-    fotoCamera.value = '';
-    fotoGaleri.value = '';
-    previewFoto.src = '#';
-    previewFotoWrapper.classList.add('hidden');
-    labelFotoModal.textContent = 'Foto makam';
-  });
-  btnRemoveFoto.dataset.listenerAttached = 'true';
-}
-// --- END Upload Foto Makam ---
+  // Event listener input kamera
+  if (fotoCamera && !fotoCamera.dataset.listenerAttached) {
+    fotoCamera.addEventListener('change', handleFotoChange);
+    fotoCamera.dataset.listenerAttached = 'true';
+  }
+  // Event listener input galeri
+  if (fotoGaleri && !fotoGaleri.dataset.listenerAttached) {
+    fotoGaleri.addEventListener('change', handleFotoChange);
+    fotoGaleri.dataset.listenerAttached = 'true';
+  }
+  // Event listener hapus foto
+  if (btnRemoveFoto && !btnRemoveFoto.dataset.listenerAttached) {
+    btnRemoveFoto.addEventListener('click', function() {
+      fotoCamera.value = '';
+      fotoGaleri.value = '';
+      previewFoto.src = '#';
+      previewFotoWrapper.classList.add('hidden');
+      labelFotoModal.textContent = 'Foto makam';
+    });
+    btnRemoveFoto.dataset.listenerAttached = 'true';
+  }
+  // --- END Upload Foto Makam ---
 
 
   if (openInputModalBtn && inputModal && closeInputModalBtn && inputFormModal) {
