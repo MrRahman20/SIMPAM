@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="./vars.css">
+  <link rel="stylesheet" href="./style.css">
+  <script src="https://cdn.tailwindcss.com/3.2.0"></script>
+  <script src="./tailwind.config.js"></script>
+  <link rel="icon" type="image/png" href="DataPemakaman/_4-s-ld-bmo-c-400-x-400-removebg-preview-10.png">
+
+<!-- HTML Title & Description -->
+<title>SIMPAM - Sistem Informasi Pemakaman</title>
+<meta name="description" content="Kelola data pemakaman secara digital dan efisien." />
+
+<!-- Google / Search Engine Tags -->
+<meta itemprop="name" content="SIMPAM - Sistem Informasi Pemakaman">
+<meta itemprop="description" content="Kelola data pemakaman secara digital dan efisien.">
+<meta itemprop="image" content="https://res.cloudinary.com/dxjncfagf/image/upload/w_1200,h_630,c_fill/v1752257656/Simpam_jrg3rm.png">
+
+<!-- Facebook Open Graph -->
+<meta property="og:locale" content="id_ID" />
+<meta property="og:url" content="https://simpam.vercel.app/" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="SIMPAM" />
+<meta property="og:title" content="SIMPAM - Sistem Informasi Pemakaman" />
+<meta property="og:description" content="Kelola data pemakaman secara digital dan efisien." />
+<meta property="og:image" content="https://res.cloudinary.com/dxjncfagf/image/upload/w_1200,h_630,c_fill/v1752257656/Simpam_jrg3rm.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:type" content="image/png" />
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content="@simpam_app" /> <!-- opsional -->
+<meta name="twitter:creator" content="@simpam_app" /> <!-- opsional -->
+<meta name="twitter:title" content="SIMPAM - Sistem Informasi Pemakaman" />
+<meta name="twitter:description" content="Kelola data pemakaman secara digital dan efisien." />
+<meta name="twitter:image" content="https://res.cloudinary.com/dxjncfagf/image/upload/w_1200,h_630,c_fill/v1752257656/Simpam_jrg3rm.png" />
+
+    
+  <style>
+    a,
+    button,
+    input,
+    select,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      border: none;
+      text-decoration: none;
+      background: none;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    menu, ol, ul {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Animasi fade-in dan slide-up */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(30px);
+      animation: fadeInUp 1s ease-out forwards;
+    }
+    .fade-in-delay-1 {
+      animation-delay: 0.3s;
+    }
+    .fade-in-delay-2 {
+      animation-delay: 0.6s;
+    }
+    .fade-in-delay-3 {
+      animation-delay: 0.9s;
+    }
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    .navbar-link {
+      position: relative;
+      transition: color 0.3s;
+    }
+    .navbar-link::after {
+      content: '';
+      display: block;
+      width: 100%;
+      height: 3px;
+      background: #fff;
+      border-radius: 2px;
+      position: absolute;
+      left: 0;
+      bottom: -4px;
+      opacity: 0;
+      transform: scaleX(0);
+      transition: transform 0.3s cubic-bezier(.4,0,.2,1), opacity 0.3s;
+    }
+    .navbar-link:not(.active-navbar-link):hover::after {
+      content: '';
+      display: block;
+      width: 100%;
+      height: 3px;
+      background: #fff;
+      border-radius: 2px;
+      position: absolute;
+      left: 0;
+      bottom: -4px;
+      opacity: 1;
+      transform: scaleX(1);
+      transition: transform 0.3s cubic-bezier(.4,0,.2,1);
+    }
+    .active-navbar-link {
+      position: relative;
+      color: #fff !important;
+      background: none;
+      border-radius: 0;
+    }
+    .active-navbar-link::after {
+      content: '';
+      display: block;
+      width: 100%;
+      height: 3px;
+      background: #fff;
+      border-radius: 2px;
+      position: absolute;
+      left: 0;
+      bottom: -4px;
+      opacity: 1;
+      transform: scaleX(1);
+      transition: transform 0.3s cubic-bezier(.4,0,.2,1);
+    }
+  </style>
+  <title>SIMPAM</title>
+  <script>
+    // Reset zoom ke 100% setiap kali halaman dimuat
+    window.onload = function() {
+      document.body.style.zoom = "90%";
+      document.documentElement.style.zoom = "90%";
+    };
+  </script>
+</head>
+  <body>
+  <div class="bg-[#ffffff] min-h-screen w-full relative">
+    <!-- Navigation -->
+    <nav class="bg-[#1f2937] w-full fixed top-0 z-50 shadow-md">
+      <div class="container mx-auto px-4 h-[65px] flex items-center justify-between fade-in">
+        <div class="flex items-center">
+          <img class="w-10 h-10" src="LandingPage/_4-s-ld-bmo-c-400-x-400-removebg-preview-10.png" alt="Logo"/>
+          <span class="text-white font-semibold text-xl ml-2">SIMPAM</span>
+        </div>
+        <!-- Desktop Menu -->
+        <div class="hidden md:flex items-center space-x-8">
+          <a href="#hero" class="navbar-link text-[#91C8E4] font-medium">Beranda</a>
+          <a href="#about" class="navbar-link text-[#91C8E4] font-medium">Tentang</a>
+          <a href="#history" class="navbar-link text-[#91C8E4] font-medium">Sejarah</a>
+          <a href="#vision" class="navbar-link text-[#91C8E4] font-medium">Visi dan Misi</a>
+          <a href="LoginAdmin.html" class="bg-[#2563eb] text-white px-4 py-2 rounded-lg">Login Admin</a>
+        </div>
+        <!-- Mobile Hamburger -->
+        <button id="mobile-menu-btn" class="md:hidden text-white focus:outline-none">
+          <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+      </div>
+      <!-- Mobile Menu -->
+      <div id="mobile-menu" class="md:hidden hidden bg-[#1f2937] px-4 pb-4">
+        <a href="#hero" class="block navbar-link text-[#2563eb] font-medium py-2">Beranda</a>
+        <a href="#about" class="block navbar-link text-[#2563eb] font-medium py-2">Tentang</a>
+        <a href="#history" class="block navbar-link text-[#2563eb] font-medium py-2">Sejarah</a>
+        <a href="#vision" class="block navbar-link text-[#2563eb] font-medium py-2">Visi dan Misi</a>
+        <a href="LoginAdmin.html" class="block bg-[#2563eb] text-white px-4 py-2 rounded-lg mt-2 text-center">Login Admin</a>
+      </div>
+    </nav>
+    <!-- End Navigation -->
+
+    <!-- Hero Section with Search -->
+    <section id="hero" class="relative">
+      <div class="relative">
+        <img class="block w-full h-[200px] md:h-[600px] object-cover m-0 p-0 border-none rounded-none shadow-none transition-transform duration-300 ease-in-out hover:scale-110" src="LandingPage/_7-e-96-aea-5-05-a-6-4-e-97-b-2-ba-f-1-aa-225-c-2656-10.png" alt="Hero"/>
+        <div class="absolute inset-0 bg-gradient-to-r from-[rgba(240,249,255,0.95)] to-transparent"></div>
+        <div class="container mx-auto px-4 flex flex-col items-center justify-center text-center pt-24 md:absolute md:inset-0 md:pt-0">
+          <h1 class="text-2xl md:text-5xl font-bold text-[#1f2937] mb-4 fade-in">Sistem Informasi Pemakaman</h1>
+          <p class="text-base md:text-2xl text-[#1f2937] mb-8 fade-in fade-in-delay-1">Cari dan catat data almarhum secara mudah dan akurat</p>
+          <!-- Search Box -->
+          <div class="w-full max-w-3xl bg-white rounded-xl p-4 md:p-6 shadow-lg fade-in fade-in-delay-2 transition-transform duration-300 ease-in-out hover:scale-110">
+          <div class="w-full max-w-3xl bg-white rounded-xl p-4 md:p-6 shadow-lg fade-in fade-in-delay-2">
+            <div class="flex flex-col md:flex-row items-stretch md:items-center gap-4">
+              <input 
+                id="landingSearchInput"
+                type="text" 
+                placeholder="Cari nama almarhum..." 
+                class="flex-1 border border-[#d1d5db] rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#2563eb] focus:border-transparent" 
+              />
+              <button id="landingSearchBtn" class="bg-[#2563eb] hover:bg-[#1d4ed8] text-white px-6 py-3 rounded-lg flex items-center justify-center transition-colors">
+                <img src="LandingPage/frame3.svg" class="w-5 h-5 mr-2" alt="Cari"/>
+                Cari
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-12 md:py-16">
+      <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <!-- Feature cards -->
+          <div class="bg-white rounded-xl p-6 shadow-lg border border-[#e5e7eb] transform transition-transform duration-300 ease-in-out hover:scale-110">
+            <div class="bg-[#dbeafe] w-12 h-12 rounded-lg mb-4 flex items-center justify-center">
+              <img src="LandingPage/frame0.svg" class="w-6 h-6" />
+            </div>
+            <h3 class="text-xl font-semibold text-[#1f2937] mb-2">Pencarian Cepat</h3>
+            <p class="text-[#6b7280]">Temukan data almarhum dengan mudah menggunakan nama</p>
+          </div>
+          <div class="bg-white rounded-xl p-6 shadow-lg border border-[#e5e7eb]transform transition-transform duration-300 ease-in-out hover:scale-110">
+            <div class="bg-[#dbeafe] w-12 h-12 rounded-lg mb-4 flex items-center justify-center">
+              <img src="LandingPage/frame1.svg" class="w-6 h-6" />
+            </div>
+            <h3 class="text-xl font-semibold text-[#1f2937] mb-2">Data Lengkap</h3>
+            <p class="text-[#6b7280]">Informasi detail termasuk tanggal lahir, wafat, lokasi makam, dan data keluarga</p>
+          </div>
+          <div class="bg-white rounded-xl p-6 shadow-lg border border-[#e5e7eb]transform transition-transform duration-300 ease-in-out hover:scale-110">
+            <div class="bg-[#dbeafe] w-12 h-12 rounded-lg mb-4 flex items-center justify-center">
+              <img src="LandingPage/frame2.svg" class="w-6 h-6" />
+            </div>
+            <h3 class="text-xl font-semibold text-[#1f2937] mb-2">Data Aman</h3>
+            <p class="text-[#6b7280]">Sistem keamanan tinggi untuk melindungi data sensitif dan privasi keluarga</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-12 md:py-16 bg-[#f8f9fa]">
+      <div class="container mx-auto px-4">
+        <h2 class="text-4xl font-bold text-center text-[#1f2937] mb-8 fade-in">Tentang Aplikasi</h2>
+        <div class="bg-white rounded-xl p-6 shadow-lg transition-transform duration-300 ease-in-out hover:scale-110">
+          <p class="text-xl text-[#000000] text-center">
+            Aplikasi ini membantu masyarakat untuk mencari lokasi pemakaman dan mencatat
+            data almarhum secara digital dan dapat diandalkan untuk pengelolaan data
+            pemakaman di TPU Rorotan Jakarta Utara.
+            <br />
+            <br />
+            TPU Rorotan merupakan Tempat Pemakaman Umum di Kelurahan Rorotan, Kecamatan
+            Cilincing, Jakarta Utara. TPU Rorotan adalah solusi strategis Pemprov DKI
+            untuk menghadapi krisis lahan makam akibat pandemi, dengan cepat
+            dioperasikan dan ditata secara profesional.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- History Section -->
+    <section id="history" class="py-12 md:py-16 bg-[#ffffff]">
+      <div class="container mx-auto px-4">
+        <h2 class="text-4xl font-bold text-center text-[#1f2937] mb-8 fade-in">Sejarah</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="bg-[rgba(31,41,55,0.21)] rounded-xl p-6 transform transition-transform duration-300 ease-in-out hover:scale-110">
+            <p class="text-lg text-[#000000]">
+              TPU Rorotan terletak di Kelurahan Rorotan, Jakarta Utara. Dahulu kawasan ini
+              merupakan lahan pertanian produktif dan dikenal sejak era kolonial Belanda
+              sebagai Rawa Rotan. Pada akhir 2020, lahan ini dialihfungsikan menjadi TPU
+              khusus COVID‑19 oleh Pemprov DKI Jakarta karena lonjakan kematian akibat
+              pandemi. TPU mulai difungsikan sejak 26 Maret 2021 dan dikhususkan bagi
+              jenazah pasien COVID‑19 ber-KTP DKI. Dalam setahun, lebih dari 6.000 jenazah
+              telah dimakamkan. Karena berdiri di atas bekas rawa, pemadatan lahan dan
+              pembangunan polder serta waduk dilakukan untuk menghindari banjir. DPRD DKI
+              kemudian mendorong agar sebagian TPU dijadikan taman kota untuk menghapus
+              kesan angker dan menambah ruang hijau bagi masyarakat.
+            </p>
+          </div>
+          <div class="grid grid-cols-1 gap-4 fade-in fade-in-delay-2">
+            <img class="rounded-[30px] w-full h-auto object-cover aspect-video transition-transform duration-300 ease-in-out hover:scale-110" src="LandingPage/_01-ea-58-ceff-7-ce-95-b-6-af-6-b-2-d-9-b-2-fc-2-d-5-c-10.png" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Vision and Mission Section -->
+    <section id="vision" class="py-12 md:py-16 bg-[#f4f4f4]">
+      <div class="container mx-auto px-4">
+        <h2 class="text-4xl font-bold text-center text-[#1f2937] mb-8 fade-in">Visi dan Misi</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="bg-white rounded-xl p-6 shadow-lg transform transition-transform duration-300 ease-in-out hover:scale-110">
+            <h3 class="text-4xl font-semibold text-center text-[#1f2937] mb-4">Visi</h3>
+            <p class="text-base text-[#000000] text-center">
+              Menjadi TPU yang tertata rapi, aman, dan dapat diandalkan, terutama dalam
+              menghadapi krisis lahan pemakaman seperti pada masa pandemi. TPU Rorotan
+              difungsikan sebagai solusi untuk krisis lahan makam dan terus diprioritaskan
+              penataannya atas nama pelayanan publik.
+            </p>
+          </div>
+          <div class="bg-white rounded-xl p-6 shadow-lg transition-transform duration-300 ease-in-out hover:scale-110">
+            <h3 class="text-4xl font-semibold text-center text-[#1f2937] mb-4">Misi</h3>
+            <ol class="list-disc pl-6 text-base text-[#000000]">
+              <li>
+                Menyediakan lahan pemakaman yang layak dan memadai, khususnya untuk
+                jenazah pasien COVID‑19 mulai Maret 2021.
+              </li>
+              <li>
+                Mengembangkan dan mematangkan lahan secara bertahap, termasuk pengerasan
+                jalan dan pengurukan tanah untuk menjaga struktur dan keamanan makam.
+              </li>
+              <li>
+                Meningkatkan kapasitas pelayanan dengan mendukung petugas dan
+                fasilitas—menambah staf keamanan, penerangan, dan infrastruktur TPU agar
+                proses pemakaman berjalan terorganisir.
+              </li>
+              <li>
+                Menjawab kebutuhan darurat selama pandemi, menyediakan akses cepat dan
+                proses yang tertib bagi pasien COVID‑19 yang meninggal.
+              </li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-[#1f2937] text-white py-12 md:py-16">
+      <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="fade-in">
+            <div class="flex items-center mb-4">
+              <img class="w-[42px] h-[42px]" src="LandingPage/_4-s-ld-bmo-c-400-x-400-removebg-preview-11.png" />
+              <span class="font-semibold text-xl ml-2">SIMPAM</span>
+            </div>
+            <p>Sistem digital modern untuk pengelolaan data pemakaman yang mudah diakses oleh ahli waris.</p>
+          </div>
+          <div class="fade-in fade-in-delay-1">
+            <h4 class="font-semibold mb-4">ALAMAT</h4>
+            <p>RXW9+JFF, RT.3/RW.9, Rorotan, Kec. Cilincing, Jkt Utara, Daerah Khusus Ibukota Jakarta 14140</p>
+          </div>
+          <div class="fade-in fade-in-delay-2 flex items-center justify-center">
+            <div class="w-full md:w-56 h-40 rounded-xl shadow-lg overflow-hidden border-2 border-white">
+              <iframe
+                width="100%"
+                height="100%"
+                style="border:0;"
+                loading="lazy"
+                allowfullscreen
+                referrerpolicy="no-referrer-when-downgrade"
+                src="https://www.google.com/maps?q=-6.15311502279351,106.9686593423073&hl=id&z=17&output=embed">
+              </iframe>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Modal Popup Detail Almarhum -->
+  <div id="modalDetailAlmarhum" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-xl w-full max-w-md p-6 relative shadow-lg">
+      <button id="closeModalDetail" class="absolute top-3 right-3 text-gray-400 hover:text-red-500 text-xl">&times;</button>
+      <div class="flex flex-col items-center">
+        <img id="modalFotoAlmarhum" src="" alt="Foto Almarhum" class="w-80 h-80 object-cover rounded-xl mb-6 border-2 border-gray-300" />
+        <div class="font-bold text-4xl text-[#2563eb] mb-4 text-center" id="modalNamaAlmarhum"></div>
+          <div class="text-gray-700 text-xl mb-2 text-center"><span class="font-semibold">Ahli Waris:</span><br><span id="modalAhliWaris"></span></div>
+          <div class="text-gray-700 text-xl mb-2 text-center"><span class="font-semibold">Nomor HP:</span><br><span id="modalNomorHp"></span></div>
+          <div class="text-gray-700 text-xl mb-2 text-center"><span class="font-semibold">Tanggal Meninggal:</span><br><span id="modalTanggalMeninggal"></span></div>
+          <div class="text-gray-700 text-xl mb-2 text-center"><span class="font-semibold">Tanggal Dikubur:</span><br><span id="modalTanggalDikubur"></span></div>
+          <div class="text-gray-700 text-xl mb-2 text-center"><span class="font-semibold">Alamat:</span><br><span id="modalAlamat" class="break-all"></span></div>
+          <div class="text-gray-700 text-xl mb-2 text-center"><span class="font-semibold">Lokasi Makam:</span><br><span id="modalLokasiMakam"></span></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Mobile menu toggle
+    document.getElementById('mobile-menu-btn').addEventListener('click', function () {
+      const menu = document.getElementById('mobile-menu');
+      menu.classList.toggle('hidden');
+    });
+
+    // Smooth scroll for navbar links & active state
+    document.addEventListener('DOMContentLoaded', function () {
+      // Gabungkan navLinks desktop dan mobile, kecuali Login Admin
+      // Hanya pasangkan link yang section-nya benar-benar ada
+      const allNavLinks = Array.from(document.querySelectorAll('nav a.navbar-link')).filter(link => link.getAttribute('href') && link.getAttribute('href').startsWith('#'));
+      const navLinks = [];
+      const sections = [];
+      allNavLinks.forEach(link => {
+        const section = document.getElementById(link.getAttribute('href').slice(1));
+        if (section) {
+          navLinks.push(link);
+          sections.push(section);
+        }
+      });
+
+      function setActiveLinkBySection() {
+        let index = 0;
+        // Jika sudah hampir di bawah, paksa ke section terakhir
+        if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 2) {
+          index = sections.length - 1;
+        } else {
+          // Cek posisi scroll terhadap setiap section
+          for (let i = 0; i < sections.length; i++) {
+            const sectionTop = sections[i].offsetTop - 80; // 80 = tinggi navbar + margin
+            if (window.scrollY >= sectionTop) {
+              index = i;
+            }
+          }
+        }
+        navLinks.forEach((link, i) => {
+          if (i === index) {
+            link.classList.add('active-navbar-link');
+          } else {
+            link.classList.remove('active-navbar-link');
+          }
+        });
+      }
+
+      // On click, set active dan scroll
+      navLinks.forEach(function(anchor, idx) {
+        anchor.addEventListener('click', function(e) {
+          e.preventDefault();
+          const targetId = this.getAttribute('href').slice(1);
+          const target = document.getElementById(targetId);
+          if (target) {
+            window.scrollTo({
+              top: target.getBoundingClientRect().top + window.pageYOffset - 60,
+              behavior: 'smooth'
+            });
+          }
+          // Tidak perlu set class active di sini, biarkan event scroll yang mengatur
+        });
+      });
+
+      window.addEventListener('scroll', setActiveLinkBySection);
+      setActiveLinkBySection();
+    });
+  </script>
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-analytics.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+  
+    // Your web app's Firebase configuration
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    const firebaseConfig = {
+      apiKey: "AIzaSyDQslGoA5f6TNOJf0oDC0lAGXqHO5S0wsM",
+      authDomain: "simpam-dd361.firebaseapp.com",
+      projectId: "simpam-dd361",
+      storageBucket: "simpam-dd361.firebasestorage.app",
+      messagingSenderId: "445192040754",
+      appId: "1:445192040754:web:35525c654299ca81cfe72b",
+      measurementId: "G-7FJ5FWW44N"
+    };
+  
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+  </script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Ambil data realtime dari Firestore saat halaman load
+  let allData = [];
+
+  async function loadDataRealtime() {
+    const { getFirestore, collection, getDocs } = await import('https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js');
+    resultContainer.innerHTML = '<div class="text-gray-400 text-center">Memuat data...</div>';
+    try {
+      const db = getFirestore();
+      const querySnapshot = await getDocs(collection(db, 'pemakaman'));
+      allData = [];
+      querySnapshot.forEach(doc => {
+        allData.push(doc.data());
+      });
+      filterAndShowResults();
+    } catch (err) {
+      resultContainer.innerHTML = '<div class="text-red-500 text-center">Gagal memuat data: ' + err.message + '</div>';
+    }
+  }
+  loadDataRealtime();
+
+const landingSearchInput = document.getElementById('landingSearchInput');
+const landingSearchBtn = document.getElementById('landingSearchBtn');
+
+// Container hasil pencarian
+let resultContainer = document.getElementById('landingSearchResults');
+if (!resultContainer) {
+  resultContainer = document.createElement('div');
+  resultContainer.id = 'landingSearchResults';
+  resultContainer.className = 'mt-6 space-y-3';
+  // Sisipkan setelah search box
+  const searchBox = landingSearchInput.closest('.w-full.max-w-3xl');
+  if (searchBox) searchBox.parentNode.insertBefore(resultContainer, searchBox.nextSibling);
+}
+
+let currentPage = 1;
+const perPage = 6; // 3 kolom x 2 baris
+
+function filterAndShowResults() {
+  const val = landingSearchInput.value.trim().toLowerCase();
+  if (!val) {
+    resultContainer.innerHTML = '';
+    currentPage = 1;
+    return;
+  }
+  const filtered = allData.filter(data => {
+    const searchString = [
+      data.namaAlmarhum,
+      data.ahliWaris,
+      data.tanggalMeninggal,
+      data.alamat,
+      data.lokasiMakam?.blok,
+      data.lokasiMakam?.blad,
+      data.lokasiMakam?.nomor
+    ].map(x => (x||'').toString().toLowerCase()).join(' ');
+    return searchString.includes(val);
+  });
+  const total = filtered.length;
+  const totalPage = Math.max(1, Math.ceil(total/perPage));
+  if (currentPage > totalPage) currentPage = totalPage;
+  const startIdx = (currentPage-1)*perPage;
+  const endIdx = Math.min(startIdx+perPage, total);
+  if (total === 0) {
+    resultContainer.innerHTML = '<div class="text-gray-400 text-center">Tidak ada hasil ditemukan</div>';
+    return;
+  }
+  // Render grid 3x2
+  let grid = '<div class="relative">';
+  grid += `<button id="prevPageBtnSearch" class="absolute left-[-40px] top-1/2 -translate-y-1/2 bg-white border-2 border-[#2563eb] text-[#2563eb] rounded-full w-10 h-10 flex items-center justify-center shadow hover:bg-[#2563eb] hover:text-white transition disabled:opacity-100 z-10" ${currentPage===1?'disabled':''} title="Sebelumnya">&#8592;</button>`;
+  grid += `<button id="nextPageBtnSearch" class="absolute right-[-40px] top-1/2 -translate-y-1/2 bg-white border-2 border-[#2563eb] text-[#2563eb] rounded-full w-10 h-10 flex items-center justify-center shadow hover:bg-[#2563eb] hover:text-white transition disabled:opacity-100 z-10" ${currentPage===totalPage?'disabled':''} title="Selanjutnya">&#8594;</button>`;
+  grid += `<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-y-6 gap-x-4">`;
+  for(let i=startIdx; i<endIdx; i++) {
+    const data = filtered[i];
+        grid += `
+          <div class="rounded-xl border shadow p-4 bg-white flex flex-col gap-1 max-w-xs w-full mx-auto">
+            <div class="font-bold text-lg text-[#2563eb]">${data.namaAlmarhum}</div>
+            <div class="text-sm text-gray-600">Ahli Waris: ${data.ahliWaris}</div>
+            <div class="text-sm text-gray-600">Tanggal Meninggal: <br>${data.tanggalMeninggal}</div>
+            <button class="mt-3 bg-[#2563eb] hover:bg-[#1d4ed8] text-white px-4 py-2 rounded transition-colors text-sm font-semibold w-full btn-detail-almarhum" data-index="${i}">Selengkapnya</button>
+          </div>
+        `;
+  }
+  grid += '</div>';
+  grid += `<div class="text-center text-base font-bold text-black mt-2">Menampilkan ${total===0?0:startIdx+1} - ${endIdx} dari ${total} hasil</div>`;
+  grid += '</div>';
+  resultContainer.innerHTML = grid;
+
+  // Event listener panah
+  const prevBtn = document.getElementById('prevPageBtnSearch');
+  const nextBtn = document.getElementById('nextPageBtnSearch');
+  if (prevBtn) prevBtn.onclick = function() { if(currentPage>1){currentPage--;filterAndShowResults();} };
+  if (nextBtn) nextBtn.onclick = function() { if(currentPage<totalPage){currentPage++;filterAndShowResults();} };
+}
+
+landingSearchInput.addEventListener('input', filterAndShowResults);
+landingSearchBtn.addEventListener('click', filterAndShowResults);
+
+// Modal Detail Almarhum
+const modal = document.getElementById('modalDetailAlmarhum');
+const closeModalBtn = document.getElementById('closeModalDetail');
+const modalFoto = document.getElementById('modalFotoAlmarhum');
+const modalNama = document.getElementById('modalNamaAlmarhum');
+const modalAhliWaris = document.getElementById('modalAhliWaris');
+const modalNomorHp = document.getElementById('modalNomorHp');
+const modalTanggalMeninggal = document.getElementById('modalTanggalMeninggal');
+const modalTanggalDikubur = document.getElementById('modalTanggalDikubur');
+const modalAlamat = document.getElementById('modalAlamat');
+const modalLokasiMakam = document.getElementById('modalLokasiMakam');
+
+// Fungsi untuk buka modal dan isi data
+function showDetailAlmarhum(data) {
+  modalFoto.src = data.fotoUrl || 'DataPemakaman/batunissnvector.png';
+  modalNama.textContent = data.namaAlmarhum || '-';
+  modalAhliWaris.textContent = data.ahliWaris || '-';
+  modalNomorHp.textContent = data.nomorHp || '-';
+  modalTanggalMeninggal.textContent = data.tanggalMeninggal || '-';
+  modalTanggalDikubur.textContent = data.tanggalDikubur || '-';
+  modalAlamat.textContent = data.alamat || '-';
+  let lokasi = '-';
+  if (data.lokasiMakam) {
+    lokasi = `Blok ${data.lokasiMakam.blok || '-'}, Blad ${data.lokasiMakam.blad || '-'}, Nomor ${data.lokasiMakam.nomor || '-'}`;
+  }
+  modalLokasiMakam.textContent = lokasi;
+  modal.classList.remove('hidden');
+}
+// Event delegation untuk tombol Selengkapnya
+
+document.addEventListener('click', function(e) {
+  if (e.target.classList.contains('btn-detail-almarhum')) {
+    // Ambil index data dari atribut
+    const idx = parseInt(e.target.getAttribute('data-index'));
+    // Ambil data yang sedang difilter
+    const val = landingSearchInput.value.trim().toLowerCase();
+    const filtered = allData.filter(data => {
+      const searchString = [
+        data.namaAlmarhum,
+        data.ahliWaris,
+        data.tanggalMeninggal,
+        data.alamat,
+        data.lokasiMakam?.blok,
+        data.lokasiMakam?.blad,
+        data.lokasiMakam?.nomor
+      ].map(x => (x||'').toString().toLowerCase()).join(' ');
+      return searchString.includes(val);
+    });
+    showDetailAlmarhum(filtered[idx]);
+  }
+  // Tutup modal jika klik tombol close
+  if (e.target.id === 'closeModalDetail') {
+    modal.classList.add('hidden');
+  }
+  // Tutup modal jika klik di luar konten modal
+  if (e.target === modal) {
+    modal.classList.add('hidden');
+  }
+});
+
+});
+</script>
+</body>
+</html>
