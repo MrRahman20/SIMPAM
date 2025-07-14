@@ -53,7 +53,7 @@ window.loadPemakaman = loadPemakaman;
 
 // Fungsi render table
 function renderTable() {
-  const sortMenu = document.getElementById('sortMenu')?.value || 'namaAz';
+  const sortMenu = document.getElementById('sortMenu')?.value || 'tanggalTerbaru';
   const tbody = document.getElementById('pemakamanTableBody');
   const lowerFilter = currentFilter.trim().toLowerCase();
   const filtered = allData.filter((data) => {
@@ -91,8 +91,8 @@ function renderTable() {
       if (valA > valB) return 1;
       return 0;
     } else if (sortMenu === 'tanggalTerbaru' || sortMenu === 'tanggalTerlama') {
-      const dateA = parseDateIndo(a.tanggalMeninggal);
-      const dateB = parseDateIndo(b.tanggalMeninggal);
+      const dateA = parseDateIndo(a.tanggalDikubur);
+      const dateB = parseDateIndo(b.tanggalDikubur);
       if (!dateA && !dateB) return 0;
       if (!dateA) return 1;
       if (!dateB) return -1;
@@ -1723,7 +1723,47 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       }
 
+      function checkDataExist(data) {
+        // Ambil data yang sudah ada di tabel
+        const existingData = allData.filter((item) => {
+          return (
+            item.namaAlmarhum.trim().toLowerCase() === data.namaAlmarhum.trim().toLowerCase() &&
+            item.ahliWaris.trim().toLowerCase() === data.ahliWaris.trim().toLowerCase() &&
+            item.nomorHp === data.nomorHp &&
+            item.alamat === data.alamat &&
+            item.lokasiMakam.blok === data.lokasiMakam.blok &&
+            item.lokasiMakam.blad === data.lokasiMakam.blad &&
+            item.lokasiMakam.nomor === data.lokasiMakam.nomor
+          );
+        });
+      
+        // Jika data sudah ada, return true
+        if (existingData.length > 0) {
+          return true;
+        }
+      
+        return false;
+      }
+      
       try {
+        // Cek apakah data sudah ada
+        const dataToCheck = {
+          namaAlmarhum: nama,
+          ahliWaris: ahliWaris,
+          nomorHp: nomorHp,
+          alamat: alamat,
+          lokasiMakam: { blok, blad, nomor },
+        };
+        if (checkDataExist(dataToCheck)) {
+          showErrorPopup('Data pemakaman sudah ada.');
+          return false;
+        }
+      } catch (err) {
+        showErrorPopup('Error cek data pemakaman.');
+        return;
+      }
+      try {
+        // Simpan data ke Firestore
         await db.collection('pemakaman').add({
           namaAlmarhum: nama,
           ahliWaris: ahliWaris,
