@@ -55,10 +55,13 @@
     <div class="container mx-auto flex items-center justify-between px-4 py-3">
       <div class="flex items-center gap-3">
         <img src="DataPemakaman/_4-s-ld-bmo-c-400-x-400-removebg-preview-10.png" alt="Logo" class="w-10 h-10 object-cover rounded" />
-        <span class="text-white font-semibold text-xl">SIMPAM</span>
+        <div class="flex flex-col leading-tight">
+          <span class="text-white font-semibold text-xl">SIMPAM</span>
+          <span class="text-white text-xs opacity-80">Sistem Informasi Data Pemakaman</span>
+        </div>
       </div>
       <button 
-        class="flex items-center gap-2 bg-[#2563eb] text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+        class="flex items-center gap-2 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition"
         id="logoutButton"
       >
         Logout
@@ -66,6 +69,11 @@
     </div>
   </header>
   <main class="container mx-auto px-2 sm:px-4 py-6">
+    <button class="bg-[#2563eb] text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition mb-4" id="backButton" style="border-radius: 12px;">
+      <a href="LandingPage.html">
+        Kembali
+      </a>
+    </button>
     <div class="bg-white rounded-xl shadow-lg border border-[#e5e7eb] p-6">
       <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
         <div class="flex gap-2 items-center mt-2 md:mt-0">
@@ -76,7 +84,8 @@
             <option value="namaAz">A-Z</option>
           </select>
         </div>
-        <h1 class="text-2xl font-bold text-[#1f2937]">Data Pemakaman</h1>
+
+        <h1 class="text-2xl font-bold text-[#1f2937]">Data Jenazah</h1>
         <div class="flex gap-2">
         </div>
       </div>
@@ -101,10 +110,13 @@
       </div>
 
         <div id="inputModal" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden">
-          <div class="bg-white rounded-xl shadow-lg w-full max-w-2xl p-8 relative animate-bounce-in overflow-y-auto max-h-[100vh] sm:max-h-none sm:overflow-visible">
-            <button id="closeInputModalBtn" class="absolute top-4 right-4 text-gray-500 hover:text-red-500 text-2xl font-bold">&times;</button>
-            <h2 class="text-2xl font-bold text-[#1f2937] mb-2 text-center">Input Data Pemakaman</h2>
-            <form class="mt-4" id="inputFormModal">
+          <div class="bg-white rounded-xl shadow-lg w-full max-w-2xl max-h-[90vh] flex flex-col">
+            <div class="p-6 pb-4 border-b border-gray-200">
+              <h2 class="text-2xl font-bold text-[#1f2937] text-center">Input Data Jenazah</h2>
+              <button id="closeInputModalBtn" class="absolute top-4 right-4 text-gray-500 hover:text-red-500 text-2xl font-bold">&times;</button>
+            </div>
+            <div class="overflow-y-auto p-6 pt-4">
+              <form id="inputFormModal">
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label class="block text-[#374151] font-medium text-sm mb-1" for="namaModal">Nama Almarhum</label>
@@ -123,8 +135,24 @@
                 <input id="tanggalMeninggalModal" name="tanggalMeninggal" type="date" class="rounded-lg border border-[#d1d5db] w-full h-10 px-3 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-400" />
               </div>
               <div>
-                <label class="block text-[#374151] font-medium text-sm mb-1" for="tanggalDikuburModal">Tanggal Dimakamkan</label>
+                <label class="block text-[#374151] font-medium text-sm mb-1" for="tanggalDikuburModal">Tanggal Dikubur</label>
                 <input id="tanggalDikuburModal" name="tanggalDikubur" type="date" class="rounded-lg border border-[#d1d5db] w-full h-10 px-3 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-400" />
+              </div>
+              <div>
+                <label class="block text-[#374151] font-medium text-sm mb-1" for="hubunganDenganAlmarhumModal">Hubungan dengan Almarhum</label>
+                <select id="hubunganDenganAlmarhumModal" name="hubunganDenganAlmarhum" class="rounded-lg border border-[#d1d5db] w-full h-10 px-3 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white">
+                  <option value="" disabled selected>Pilih Hubungan</option>
+                  <option value="Anak">Anak</option>
+                  <option value="Ibu">Ibu</option>
+                  <option value="Ayah">Ayah</option>
+                  <option value="Istri">Istri</option>
+                  <option value="Suami">Suami</option>
+                  <option value="Kerabat">Kerabat</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-[#374151] font-medium text-sm mb-1" for="asalJenazahModal">Asal Jenazah</label>
+                <input id="asalJenazahModal" name="asalJenazah" type="text" maxlength="100" class="rounded-lg border border-[#d1d5db] w-full h-10 px-3 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="Contoh: RS Harapan Bunda, Puskesmas Kecamatan, dll" />
               </div>
               <div>
                 <label class="block text-[#374151] font-medium text-sm mb-1">Upload Foto (Maks. 2MB)</label>
@@ -179,15 +207,40 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
                     <label class="block text-[#6b7280] text-xs mb-1" for="blokModal">Blok</label>
-                    <input id="blokModal" name="blok" type="text" maxlength="10" class="rounded-lg border border-[#d1d5db] w-full h-12 px-4 focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="Blok" />
+                    <select id="blokModal" name="blok" class="rounded-lg border border-[#d1d5db] w-full h-12 px-4 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                      <option value="">Pilih Blok</option>
+                      <option value="A1">A1</option>
+                      <option value="A2">A2</option>
+                      <option value="AA1">AA1</option>
+                      <option value="AA2">AA2</option>
+                    </select>
                   </div>
                   <div>
                     <label class="block text-[#6b7280] text-xs mb-1" for="bladModal">Blad</label>
-                    <input id="bladModal" name="blad" type="text" class="rounded-lg border border-[#d1d5db] w-full h-12 px-4 focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="Blad" />
+                    <select id="bladModal" name="blad" class="rounded-lg border border-[#d1d5db] w-full h-12 px-4 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                      <option value="">Pilih Blad</option>
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                      <option value="4">4</option>
+                      <option value="5">5</option>
+                      <option value="6">6</option>
+                      <option value="7">7</option>
+                      <option value="8">8</option>
+                      <option value="9">9</option>
+                      <option value="10">10</option>
+                    </select>
                   </div>
                   <div>
                     <label class="block text-[#6b7280] text-xs mb-1" for="nomorModal">Nomor</label>
-                    <input id="nomorModal" name="nomor" type="text" class="rounded-lg border border-[#d1d5db] w-full h-12 px-4 focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="Nomor" />
+                    <select id="nomorModal" name="nomor" class="rounded-lg border border-[#d1d5db] w-full h-12 px-4 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                      <option value="">Pilih Nomor</option>
+                      <script>
+                        for (let i = 1; i <= 400; i++) {
+                          document.write(`<option value="${i}">${i}</option>`);
+                        }
+                      </script>
+                    </select>
                   </div>
                 </div>
               </div>
@@ -196,8 +249,8 @@
                 <button type="submit" class="rounded-lg bg-[#2563eb] text-white font-medium text-base h-12 w-full md:w-1/2 shadow-md hover:bg-blue-700 transition">Simpan Data</button>
               </div>
     </div>
-  </form>
-          </div>
+                          </form>
+            </div>
         </div>
       <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
         <div class="flex items-center bg-white border rounded-lg px-3 py-2 w-full md:w-1/3">
@@ -216,11 +269,15 @@
         </div>
       </div>
 
-      <button id="deleteSelectedBtn" class="mb-3 px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 transition">Hapus Terpilih</button>
-      <button id="exportExcelBtn" class="mb-3 px-4 py-2 rounded-lg bg-green-500 text-white hover:bg-green-600 transition">Export Excel</button>
-      <button id="openInputModalBtn" class="mb-3 px-4 py-2 rounded-lg bg-[#2563eb] text-white hover:bg-blue-700 transition">
-        Input Data
-      </button>
+      <div class="flex justify-between items-center mb-3">
+        <button id="deleteSelectedBtn" class="px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 transition">Hapus Terpilih</button>
+        <div class="flex gap-2">
+          <button id="exportExcelBtn" class="px-4 py-2 rounded-lg bg-green-500 text-white hover:bg-green-600 transition">Export Excel</button>
+          <button id="openInputModalBtn" class="px-4 py-2 rounded-lg bg-[#2563eb] text-white hover:bg-blue-700 transition">
+            Input Data
+          </button>
+        </div>
+      </div>
       <div class="overflow-x-auto rounded-lg border border-[#e5e7eb] bg-white">
         <table class="min-w-full divide-y divide-gray-200 break-words max-w-xs" id="pemakamanTable">
           <thead class="bg-gray-50">
@@ -233,7 +290,9 @@
               <th class="p-3 text-left uppercase font-semibold">AHLI WARIS</th>
               <th class="p-3 text-left uppercase font-semibold">NOMOR HP</th>
               <th class="p-3 text-left uppercase font-semibold">TANGGAL MENINGGAL</th>
-              <th class="p-3 text-left uppercase font-semibold">TANGGAL DIMAKAMKAN</th>
+              <th class="p-3 text-left uppercase font-semibold">TANGGAL DIKUBUR</th>
+              <th class="p-3 text-left uppercase font-semibold">HUBUNGAN DENGAN ALMARHUM</th>
+              <th class="p-3 text-left uppercase font-semibold">ASAL JENAZAH</th>
               <th class="p-3 text-left uppercase font-semibold">ALAMAT</th>
               <th class="p-3 text-left uppercase font-semibold">LOKASI MAKAM</th>
               <th class="p-3 text-left uppercase font-semibold">FOTO <br>MAKAM</th>

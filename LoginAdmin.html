@@ -84,9 +84,12 @@
   <!-- Navbar -->
   <nav class="bg-[#1f2937] w-full fixed top-0 z-50 shadow-md">
     <div class="container mx-auto px-4 h-[65px] flex items-center justify-between">
-      <div class="flex items-center">
-        <img class="w-10 h-10" src="LoginAdmin/_4-s-ld-bmo-c-400-x-400-removebg-preview-10.png" alt="Logo"/>
-        <span class="text-white font-semibold text-xl ml-2">SIMPAM</span>
+      <div class="flex items-center gap-3">
+        <img src="DataPemakaman/_4-s-ld-bmo-c-400-x-400-removebg-preview-10.png" alt="Logo" class="w-10 h-10 object-cover rounded" />
+        <div class="flex flex-col leading-tight">
+          <span class="text-white font-semibold text-xl">SIMPAM</span>
+          <span class="text-white text-xs opacity-80">Sistem Informasi Data Pemakaman</span>
+        </div>
       </div>
       <!-- Desktop Menu -->
       <div class="hidden md:flex items-center space-x-8">
@@ -237,7 +240,8 @@
           if (formAdmin) {
             formAdmin.classList.remove("hidden");
           }
-          window.location.href = 'DataPemakaman.html';
+          localStorage.setItem('isAdmin', 'true');
+          window.location.href = 'LandingPage.html';
         })
         .catch(err => {
           // Show animated popup

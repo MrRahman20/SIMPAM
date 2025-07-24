@@ -61,6 +61,8 @@ function renderTable() {
       data.namaAlmarhum,
       data.ahliWaris,
       data.tanggalMeninggal,
+      data.hubunganDenganAlmarhum,
+      data.asalJenazah,
       data.alamat,
       data.lokasiMakam?.blok,
       data.lokasiMakam?.blad,
@@ -116,24 +118,30 @@ function renderTable() {
           <input type="checkbox" class="rowCheckbox" data-id="${data.id}" />
         </td>
         <td class="p-3 break-words max-w-xs">${i+1}</td>
-        <td class="p-3 break-words max-w-xs font-medium text-[#1f2937]" data-field="namaAlmarhum">${data.namaAlmarhum || ''}</td>
-        <td class="p-3 break-words max-w-xs text-gray-500" data-field="ahliWaris">${data.ahliWaris || ''}</td>
-        <td class="p-3 break-words max-w-xs text-gray-500" data-field="nomorHp">${data.nomorHp || ''}</td>
-        <td class="p-3 break-words max-w-xs text-gray-500" data-field="tanggalMeninggal">${data.tanggalMeninggal || ''}</td>
-        <td class="p-3 break-words max-w-xs text-gray-500" data-field="tanggalDikubur">${data.tanggalDikubur || ''}</td>
-        <td class="p-3 break-words max-w-xs text-gray-500" data-field="alamat">${data.alamat || ''}</td>
+        <td class="p-3 break-words max-w-xs font-medium text-[#1f2937]" data-field="namaAlmarhum">${data.namaAlmarhum || '-'}</td>
+        <td class="p-3 break-words max-w-xs text-gray-500" data-field="ahliWaris">${data.ahliWaris || '-'}</td>
+        <td class="p-3 break-words max-w-xs text-gray-500" data-field="nomorHp">${data.nomorHp || '-'}</td>
+        <td class="p-3 break-words max-w-xs text-gray-500" data-field="tanggalMeninggal">${data.tanggalMeninggal || '-'}</td>
+        <td class="p-3 break-words max-w-xs text-gray-500" data-field="tanggalDikubur">${data.tanggalDikubur || '-'}</td>
+        <td class="p-3 break-words max-w-xs text-gray-500" data-field="hubunganDenganAlmarhum">${data.hubunganDenganAlmarhum || '-'}</td>
+        <td class="p-3 break-words max-w-xs text-gray-500" data-field="asalJenazah">${data.asalJenazah || '-'}</td>
+        <td class="p-3 break-words max-w-xs text-gray-500" data-field="alamat">${data.alamat || '-'}</td>
         <td class="p-3 break-words max-w-xs text-gray-500" data-field="lokasiMakam" data-blok="${data.lokasiMakam?.blok || ''}" data-blad="${data.lokasiMakam?.blad || ''}" data-nomor="${data.lokasiMakam?.nomor || ''}">
-          Blok ${data.lokasiMakam?.blok || ''}, Blad ${data.lokasiMakam?.blad || ''}, Nomor ${data.lokasiMakam?.nomor || ''}
+          ${data.lokasiMakam?.blok ? `Blok ${data.lokasiMakam.blok}` : ''}${data.lokasiMakam?.blad ? `, Blad ${data.lokasiMakam.blad}` : ''}${data.lokasiMakam?.nomor ? `, No. ${data.lokasiMakam.nomor}` : ''}
         </td>
         <td class="p-3 text-center">
           ${data.fotoUrl 
-            ? `<div class="relative inline-block group"><img src="${data.fotoUrl}" alt="Foto Makam" class="w-14 h-14 object-cover rounded shadow border border-gray-200 cursor-pointer foto-thumbnail" /><button type="button" class="delete-foto-btn absolute -top-2 -right-2 bg-white border border-gray-300 rounded-full w-6 h-6 flex items-center justify-center shadow text-gray-500 text-base opacity-80 hover:bg-red-500 hover:text-white transition hidden" title="Hapus Foto">&times;</button></div>`
+            ? `<div class="relative inline-block group">
+                <img src="${data.fotoUrl}" alt="Foto Makam" class="w-14 h-14 object-cover rounded shadow border border-gray-200 cursor-pointer foto-thumbnail" />
+                <button type="button" class="delete-foto-btn absolute -top-2 -right-2 bg-white border border-gray-300 rounded-full w-6 h-6 flex items-center justify-center shadow text-gray-500 text-base opacity-80 hover:bg-red-500 hover:text-white transition hidden" title="Hapus Foto">&times;</button>
+               </div>`
             : `<div class="flex flex-col items-center justify-center min-h-[56px]">
                 <button type="button" class="upload-foto-btn hidden editing:inline-flex items-center justify-center w-8 h-8 bg-blue-100 border border-blue-300 rounded-lg hover:bg-blue-500 hover:text-white text-blue-600 text-lg transition mx-auto" title="Upload Foto">
                   <svg xmlns='http://www.w3.org/2000/svg' class='w-6 h-6 mx-auto block' fill='none' viewBox='0 0 24 24' stroke='currentColor'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5-5m0 0l5 5m-5-5v12' /></svg>
                 </button>
                 <input type="file" accept="image/*" class="hidden upload-foto-input" />
-              </div>`}
+              </div>`
+          }
         </td>
         <td class="p-3 break-words max-w-xs flex gap-2" data-actions>
           <button class="edit-btn" title="Edit">
@@ -305,16 +313,39 @@ function attachRowActions() {
       const fotoBtn = tr.querySelector('.delete-foto-btn');
       if(fotoBtn) fotoBtn.classList.remove('hidden');
       const original = {};
-      ['namaAlmarhum','ahliWaris','tanggalMeninggal','tanggalDikubur','nomorHp','alamat','lokasiMakam'].forEach(f => {
+      ['namaAlmarhum','ahliWaris','tanggalMeninggal','tanggalDikubur','nomorHp','hubunganDenganAlmarhum','asalJenazah','alamat','lokasiMakam'].forEach(f => {
         const td = tr.querySelector(`[data-field="${f}"]`);
         if(f === 'lokasiMakam') {
           original['blok'] = td.getAttribute('data-blok') || '';
           original['blad'] = td.getAttribute('data-blad') || '';
           original['nomor'] = td.getAttribute('data-nomor') || '';
+          const blokOptions = ['', 'A1', 'A2', 'AA1', 'AA2'];
+          let blokSelect = '';
+          blokSelect = '<select class="border rounded px-2 py-1 w-20" id="edit-blok">';
+          blokOptions.forEach(option => {
+            const selected = option === original['blok'] ? 'selected' : '';
+            const displayText = option || 'Pilih Blok';
+            blokSelect += `<option value="${option}" ${selected}>${displayText}</option>`;
+          });
+          blokSelect += '</select>';
+          let bladSelect = '<select class="border rounded px-2 py-1 w-16" id="edit-blad">';
+          bladSelect += '<option value="">Pilih Blad</option>';
+          for (let i = 1; i <= 10; i++) {
+            const selected = i.toString() === original['blad'] ? 'selected' : '';
+            bladSelect += `<option value="${i}" ${selected}>${i}</option>`;
+          }
+          bladSelect += '</select>';
+          let nomorSelect = '<select class="border rounded px-2 py-1 w-20" id="edit-nomor">';
+          nomorSelect += '<option value="">Pilih Nomor</option>';
+          for (let i = 1; i <= 400; i++) {
+            const selected = i.toString() === original['nomor'] ? 'selected' : '';
+            nomorSelect += `<option value="${i}" ${selected}>${i}</option>`;
+          }
+          nomorSelect += '</select>';
           td.innerHTML = `<div class="flex gap-1">
-            <input type="text" value="${original['blok']}" placeholder="Blok" class="border rounded px-2 py-1 w-16" id="edit-blok" />
-            <input type="text" value="${original['blad']}" placeholder="Blad" class="border rounded px-2 py-1 w-16" id="edit-blad" />
-            <input type="text" value="${original['nomor']}" placeholder="Nomor" class="border rounded px-2 py-1 w-20" id="edit-nomor" />
+            ${blokSelect}
+            ${bladSelect}
+            ${nomorSelect}
           </div>`;
         } else {
           original[f] = td.textContent;
@@ -343,6 +374,8 @@ function attachRowActions() {
         const tgl = tr.querySelector(`[data-field="tanggalMeninggal"] input`).value;
         const tglDikubur = tr.querySelector(`[data-field="tanggalDikubur"] input`)?.value || '';
         const noHp = tr.querySelector(`[data-field="nomorHp"] input`)?.value || '';
+        const hubungan = tr.querySelector(`[data-field="hubunganDenganAlmarhum"] input`)?.value || '';
+        const asalJenazah = tr.querySelector(`[data-field="asalJenazah"] input`)?.value || '';
         const alamat = tr.querySelector(`[data-field="alamat"] input`).value;
         const blok = tr.querySelector(`#edit-blok`).value;
         const blad = tr.querySelector(`#edit-blad`).value;
@@ -354,6 +387,8 @@ function attachRowActions() {
             tanggalMeninggal: tgl,
             tanggalDikubur: tglDikubur,
             nomorHp: noHp,
+            hubunganDenganAlmarhum: hubungan,
+            asalJenazah: asalJenazah,
             alamat: alamat,
             lokasiMakam: { blok, blad, nomor },
             fotoUrl: tr.getAttribute('data-fotourl') || '',
@@ -402,771 +437,7 @@ function attachCheckAllAndDeleteSelected() {
   if (deleteBtn) {
     deleteBtn.onclick = async function () {
       const checked = [...document.querySelectorAll('.rowCheckbox:checked')];
-      if (checked.length === 0) {// Add this function after the existing showErrorPopup function (around line 500)
-
-function showCustomErrorPopup(title, message) {
-  // Clear any existing error popup first
-  const existingPopup = document.querySelector// Handler delete foto di baris
-function attachDeleteFotoActions() {
-  document.querySelectorAll('.delete-foto-btn').forEach(btn => {
-    btn.onclick = function(e) {
-      e.stopPropagation();
-      
-      // Show confirmation popup
-      showConfirmationPopup(
-        'Konfirmasi Hapus',
-        'Apakah Anda yakin ingin menghapus foto ini?',
-        () => {
-          // Callback for confirm action - execute original deletion logic
-          const btnDiv = btn.closest('div');
-          const tr = btn.closest('tr');
-          if (!tr || !btnDiv) return;
-          
-          tr.setAttribute('data-fotourl', '');
-          tr.setAttribute('data-fotopublicid', '');
-          const fotoCell = btnDiv.closest('td');
-          if (fotoCell) {
-            fotoCell.innerHTML = `<div class="flex flex-col items-center justify-center min-h-[56px]">
-              <button type="button" class="upload-foto-btn hidden editing:inline-flex items-center justify-center w-8 h-8 bg-blue-100 border border-blue-300 rounded-lg hover:bg-blue-500 hover:text-white text-blue-600 text-lg transition mx-auto" title="Upload Foto">
-                <svg xmlns='http://www.w3.org/2000/svg' class='w-6 h-6 mx-auto block' fill='none' viewBox='0 0 24 24' stroke='currentColor'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5-5m0 0l5 5m-5-5v12' /></svg>
-              </button>
-              <input type="file" accept="image/*" class="hidden upload-foto-input" />
-            </div>`;
-            
-            // Re-attach upload functionality to the new button
-            const newUploadBtn = fotoCell.querySelector('.upload-foto-btn');
-            const newUploadInput = fotoCell.querySelector('.upload-foto-input');
-            
-            if (newUploadBtn && newUploadInput) {
-              newUploadBtn.classList.remove('hidden'); // Show the upload button immediately
-              
-              newUploadBtn.onclick = function(e) {
-                e.stopPropagation();
-                newUploadInput.click();
-              };
-              
-              newUploadInput.onchange = async function(e) {
-                const file = e.target.files[0];
-                if (file) {
-                  const maxSize = 2 * 1024 * 1024;
-                  if (file.size > maxSize) {
-                    showFileSizeError(file.size);
-                    newUploadInput.value = '';
-                    return;
-                  }
-                  
-                  try {
-                    const formData = new FormData();
-                    formData.append('file', file);
-                    formData.append('upload_preset', 'simpam_upload');
-                    const res = await fetch('https://api.cloudinary.com/v1_1/dxjncfagf/image/upload', { method: 'POST', body: formData });
-                    const dataCloud = await res.json();
-                    if (!dataCloud.secure_url) throw new Error(dataCloud.error?.message || 'Upload foto gagal');
-                    
-                    const fotoUrl = dataCloud.secure_url;
-                    const fotoPublicId = dataCloud.public_id || '';
-                    
-                    // Update the cell with new photo
-                    fotoCell.innerHTML = `<div class='relative inline-block group'><img src='${fotoUrl}' alt='Foto Makam' class='w-14 h-14 object-cover rounded shadow border border-gray-200 cursor-pointer foto-thumbnail' /><button type='button' class='delete-foto-btn absolute -top-2 -right-2 bg-white border border-gray-300 rounded-full w-6 h-6 flex items-center justify-center shadow text-gray-500 text-base opacity-80 hover:bg-red-500 hover:text-white transition' title='Hapus Foto'>&times;</button></div>`;
-                    
-                    // Update row attributes
-                    tr.setAttribute('data-fotourl', fotoUrl);
-                    tr.setAttribute('data-fotopublicid', fotoPublicId);
-                    
-                    // Re-attach handlers
-                    attachDeleteFotoActions();
-                    attachFotoThumbnailActions();
-                    
-                    showSuccessPopup('Foto berhasil diupload');
-                  } catch (err) {
-                    showErrorPopup('Upload Gagal', err.message);
-                  }
-                }
-              };
-            }
-          }
-          
-          // Show success message
-          showSuccessPopup('Foto berhasil dihapus');
-        }
-      );
-    };
-  });
-}
-
-// Helper function for confirmation popup
-function showConfirmationPopup(title, message, onConfirm, onCancel = null) {
-  const popup = document.createElement('div');
-  popup.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
-  popup.innerHTML = `
-    <div class="bg-white rounded-lg p-6 max-w-sm mx-4 shadow-xl">
-      <h3 class="text-lg font-semibold text-gray-900 mb-2">${title}</h3>
-      <p class="text-gray-600 mb-6">${message}</p>
-      <div class="flex gap-3 justify-center">
-        <button class="cancel-btn px-4 py-2 text-gray-600 border border-gray-300 rounded hover:bg-gray-50 transition">
-          Batal
-        </button>
-        <button class="confirm-btn px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition">
-          Hapus
-        </button>
-      </div>
-    </div>
-  `;
-  
-  document.body.appendChild(popup);
-  
-  // Handle confirm button
-  popup.querySelector('.confirm-btn').onclick = () => {
-    document.body.removeChild(popup);
-    if (onConfirm) onConfirm();
-  };
-  
-  // Handle cancel button
-  popup.querySelector('.cancel-btn').onclick = () => {
-    document.body.removeChild(popup);
-    if (onCancel) onCancel();
-  };
-  
-  // Handle click outside popup
-  popup.onclick = (e) => {
-    if (e.target === popup) {
-      document.body.removeChild(popup);
-      if (onCancel) onCancel();
-    }
-  };
-}
-
-// Custom error popup function (fixed version)
-function showCustomErrorPopup(title, message) {
-  // Clear any existing error popup first
-  const existingPopup = document.querySelector('.custom-error-popup');
-  if (existingPopup) {
-    existingPopup.remove();
-  }
-  
-  const popup = document.createElement('div');
-  popup.className = 'custom-error-popup fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
-  popup.innerHTML = `
-    <div class="bg-white rounded-lg p-6 max-w-sm mx-4 shadow-xl transform scale-95 transition-transform">
-      <div class="flex items-center mb-4">
-        <div class="flex-shrink-0">
-          <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 18.5c-.77.833.192 2.5 1.732 2.5z"></path>
-          </svg>
-        </div>
-        <h3 class="ml-3 text-lg font-semibold text-gray-900">${title}</h3>
-      </div>
-      <p class="text-gray-600 mb-6">${message}</p>
-      <div class="flex justify-center">
-        <button class="ok-btn px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition">
-          OK
-        </button>
-      </div>
-    </div>
-  `;
-  
-  document.body.appendChild(popup);
-  
-  // Animate in
-  setTimeout(() => {
-    popup.querySelector('div').classList.remove('scale-95');
-    popup.querySelector('div').classList.add('scale-100');
-  }, 100);
-  
-  // Handle OK button
-  popup.querySelector('.ok-btn').onclick = () => {
-    popup.querySelector('div').classList.add('scale-95');
-    setTimeout(() => {
-      if (popup.parentNode) {
-        document.body.removeChild(popup);
-      }
-    }, 150);
-  };
-  
-  // Handle click outside popup
-  popup.onclick = (e) => {
-    if (e.target === popup) {
-      popup.querySelector('div').classList.add('scale-95');
-      setTimeout(() => {
-        if (popup.parentNode) {
-          document.body.removeChild(popup);
-        }
-      }, 150);
-    }
-  };
-  
-  // Auto close after 2 seconds
-  setTimeout(() => {
-    if (popup.parentNode) {
-      popup.querySelector('div').classList.add('scale-95');
-      setTimeout(() => {
-        if (popup.parentNode) {
-          document.body.removeChild(popup);
-        }
-      }, 150);
-    }
-  }, 2000);
-}
-
-// Make sure the function is available globally
-window.showCustomErrorPopup = showCustomErrorPopup;
-window.attachDeleteFotoActions = attachDeleteFotoActions;custom-error-popup
-  if (existingPopup) {
-    existingPopup.remove();
-  }
-  
-  const popup = document.createElement('div');// Handler delete foto di baris - FIXED VERSION
-function attachDeleteFotoActions() {
-  document.querySelectorAll('.delete-foto-btn').forEach(btn => {
-    btn.onclick = function(e) {
-      e.stopPropagation();
-      
-      // Show confirmation popup
-      showConfirmationPopup(
-        'Konfirmasi Hapus',
-        'Apakah Anda yakin ingin menghapus foto ini?',
-        () => {
-          // Callback for confirm action - execute original deletion logic
-          const btnDiv = btn.closest('div');
-          const tr = btn.closest('tr');
-          if (!tr || !btnDiv) return;
-          
-          tr.setAttribute('data-fotourl', '');
-          tr.setAttribute('data-fotopublicid', '');
-          const fotoCell = btnDiv.closest('td');
-          if (fotoCell) {
-            fotoCell.innerHTML = `<div class="flex flex-col items-center justify-center min-h-[56px]">
-              <button type="button" class="upload-foto-btn items-center justify-center w-8 h-8 bg-blue-100 border border-blue-300 rounded-lg hover:bg-blue-500 hover:text-white text-blue-600 text-lg transition mx-auto" title="Upload Foto" style="display: inline-flex;">
-                <svg xmlns='http://www.w3.org/2000/svg' class='w-6 h-6 mx-auto block' fill='none' viewBox='0 0 24 24' stroke='currentColor'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5-5m0 0l5 5m-5-5v12' /></svg>
-              </button>
-              <input type="file" accept="image/*" class="hidden upload-foto-input" />
-            </div>`;
-            
-            // Immediately attach upload functionality to the new button
-            const newUploadBtn = fotoCell.querySelector('.upload-foto-btn');
-            const newUploadInput = fotoCell.querySelector('.upload-foto-input');
-            
-            if (newUploadBtn && newUploadInput) {
-              // Make sure button is visible
-              newUploadBtn.style.display = 'inline-flex';
-              newUploadBtn.classList.remove('hidden');
-              
-              newUploadBtn.onclick = function(e) {
-                e.stopPropagation();
-                newUploadInput.click();
-              };
-              
-              newUploadInput.onchange = async function(e) {
-                const file = e.target.files[0];
-                if (file) {
-                  const maxSize = 2 * 1024 * 1024;
-                  if (file.size > maxSize) {
-                    showFileSizeError(file.size);
-                    newUploadInput.value = '';
-                    return;
-                  }
-                  
-                  try {
-                    const formData = new FormData();
-                    formData.append('file', file);
-                    formData.append('upload_preset', 'simpam_upload');
-                    const res = await fetch('https://api.cloudinary.com/v1_1/dxjncfagf/image/upload', { method: 'POST', body: formData });
-                    const dataCloud = await res.json();
-                    if (!dataCloud.secure_url) throw new Error(dataCloud.error?.message || 'Upload foto gagal');
-                    
-                    const fotoUrl = dataCloud.secure_url;
-                    const fotoPublicId = dataCloud.public_id || '';
-                    
-                    // Update the cell with new photo
-                    fotoCell.innerHTML = `<div class='relative inline-block group'><img src='${fotoUrl}' alt='Foto Makam' class='w-14 h-14 object-cover rounded shadow border border-gray-200 cursor-pointer foto-thumbnail' /><button type='button' class='delete-foto-btn absolute -top-2 -right-2 bg-white border border-gray-300 rounded-full w-6 h-6 flex items-center justify-center shadow text-gray-500 text-base opacity-80 hover:bg-red-500 hover:text-white transition' title='Hapus Foto'>&times;</button></div>`;
-                    
-                    // Update row attributes
-                    tr.setAttribute('data-fotourl', fotoUrl);
-                    tr.setAttribute('data-fotopublicid', fotoPublicId);
-                    
-                    // Re-attach handlers
-                    attachDeleteFotoActions();
-                    attachFotoThumbnailActions();
-                    
-                    showSuccessPopup('Foto berhasil diupload');
-                  } catch (err) {
-                    showErrorPopup('Upload Gagal', err.message);
-                  }
-                }
-              };
-            }
-          }
-          
-          // Show success message
-          showSuccessPopup('Foto berhasil dihapus');
-        }
-      );
-    };
-  });
-}
-
-// Helper function for confirmation popup
-function showConfirmationPopup(title, message, onConfirm, onCancel = null) {
-  const popup = document.createElement('div');
-  popup.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
-  popup.innerHTML = `
-    <div class="bg-white rounded-lg p-6 max-w-sm mx-4 shadow-xl">
-      <h3 class="text-lg font-semibold text-gray-900 mb-2">${title}</h3>
-      <p class="text-gray-600 mb-6">${message}</p>
-      <div class="flex gap-3 justify-center">
-        <button class="cancel-btn px-4 py-2 text-gray-600 border border-gray-300 rounded hover:bg-gray-50 transition">
-          Batal
-        </button>
-        <button class="confirm-btn px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition">
-          Hapus
-        </button>
-      </div>
-    </div>
-  `;
-  
-  document.body.appendChild(popup);
-  
-  // Handle confirm button
-  popup.querySelector('.confirm-btn').onclick = () => {
-    document.body.removeChild(popup);
-    if (onConfirm) onConfirm();
-  };
-  
-  // Handle cancel button
-  popup.querySelector('.cancel-btn').onclick = () => {
-    document.body.removeChild(popup);
-    if (onCancel) onCancel();
-  };
-  
-  // Handle click outside popup
-  popup.onclick = (e) => {
-    if (e.target === popup) {
-      document.body.removeChild(popup);
-      if (onCancel) onCancel();
-    }
-  };
-}
-
-// Custom error popup function (fixed version)
-function showCustomErrorPopup(title, message) {
-  // Clear any existing error popup first
-  const existingPopup = document.querySelector('.custom-error-popup');
-  if (existingPopup) {
-    existingPopup.remove();
-  }
-  
-  const popup = document.createElement('div');
-  popup.className = 'custom-error-popup fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
-  popup.innerHTML = `
-    <div class="bg-white rounded-lg p-6 max-w-sm mx-4 shadow-xl transform scale-95 transition-transform">
-      <div class="flex items-center mb-4">
-        <div class="flex-shrink-0">
-          <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 18.5c-.77.833.192 2.5 1.732 2.5z"></path>
-          </svg>
-        </div>
-        <h3 class="ml-3 text-lg font-semibold text-gray-900">${title}</h3>
-      </div>
-      <p class="text-gray-600 mb-6">${message}</p>
-      <div class="flex justify-center">
-        <button class="ok-btn px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition">
-          OK
-        </button>
-      </div>
-    </div>
-  `;
-  
-  document.body.appendChild(popup);
-  
-  // Animate in
-  setTimeout(() => {
-    popup.querySelector('div').classList.remove('scale-95');
-    popup.querySelector('div').classList.add('scale-100');
-  }, 100);
-  
-  // Handle OK button
-  popup.querySelector('.ok-btn').onclick = () => {
-    popup.querySelector('div').classList.add('scale-95');
-    setTimeout(() => {
-      if (popup.parentNode) {
-        document.body.removeChild(popup);
-      }
-    }, 150);
-  };
-  
-  // Handle click outside popup
-  popup.onclick = (e) => {
-    if (e.target === popup) {
-      popup.querySelector('div').classList.add('scale-95');
-      setTimeout(() => {
-        if (popup.parentNode) {
-          document.body.removeChild(popup);
-        }
-      }, 150);
-    }
-  };
-  
-  // Auto close after 2 seconds
-  setTimeout(() => {
-    if (popup.parentNode) {
-      popup.querySelector('div').classList.add('scale-95');
-      setTimeout(() => {
-        if (popup.parentNode) {
-          document.body.removeChild(popup);
-        }
-      }, 150);
-    }
-  }, 2000);
-}
-
-// Make sure the function is available globally
-window.showCustomErrorPopup = showCustomErrorPopup;
-window.attachDeleteFotoActions = attachDeleteFotoActions;// Handler delete foto di baris - FIXED VERSION
-function attachDeleteFotoActions() {
-  document.querySelectorAll('.delete-foto-btn').forEach(btn => {
-    btn.onclick = function(e) {
-      e.stopPropagation();
-      
-      // Show confirmation popup
-      showConfirmationPopup(
-        'Konfirmasi Hapus',
-        'Apakah Anda yakin ingin menghapus foto ini?',
-        () => {
-          // Callback for confirm action - execute original deletion logic
-          const btnDiv = btn.closest('div');
-          const tr = btn.closest('tr');
-          if (!tr || !btnDiv) return;
-          
-          tr.setAttribute('data-fotourl', '');
-          tr.setAttribute('data-fotopublicid', '');
-          const fotoCell = btnDiv.closest('td');
-          if (fotoCell) {
-            // Create upload button that's immediately visible
-            fotoCell.innerHTML = `<div class="flex flex-col items-center justify-center min-h-[56px]">
-              <button type="button" class="upload-foto-btn items-center justify-center w-8 h-8 bg-blue-100 border border-blue-300 rounded-lg hover:bg-blue-500 hover:text-white text-blue-600 text-lg transition mx-auto" title="Upload Foto" style="display: inline-flex;">
-                <svg xmlns='http://www.w3.org/2000/svg' class='w-6 h-6 mx-auto block' fill='none' viewBox='0 0 24 24' stroke='currentColor'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5-5m0 0l5 5m-5-5v12' /></svg>
-              </button>
-              <input type="file" accept="image/*" class="hidden upload-foto-input" />
-            </div>`;
-            
-            // Immediately attach upload functionality to the new button
-            const newUploadBtn = fotoCell.querySelector('.upload-foto-btn');
-            const newUploadInput = fotoCell.querySelector('.upload-foto-input');
-            
-            if (newUploadBtn && newUploadInput) {
-              // Make sure button is visible
-              newUploadBtn.style.display = 'inline-flex';
-              newUploadBtn.classList.remove('hidden');
-              
-              newUploadBtn.onclick = function(e) {
-                e.stopPropagation();
-                newUploadInput.click();
-              };
-              
-              newUploadInput.onchange = async function(e) {
-                const file = e.target.files[0];
-                if (file) {
-                  const maxSize = 2 * 1024 * 1024;
-                  if (file.size > maxSize) {
-                    showFileSizeError(file.size);
-                    newUploadInput.value = '';
-                    return;
-                  }
-                  
-                  try {
-                    const formData = new FormData();
-                    formData.append('file', file);
-                    formData.append('upload_preset', 'simpam_upload');
-                    const res = await fetch('https://api.cloudinary.com/v1_1/dxjncfagf/image/upload', { method: 'POST', body: formData });
-                    const dataCloud = await res.json();
-                    if (!dataCloud.secure_url) throw new Error(dataCloud.error?.message || 'Upload foto gagal');
-                    
-                    const fotoUrl = dataCloud.secure_url;
-                    const fotoPublicId = dataCloud.public_id || '';
-                    
-                    // Update the cell with new photo
-                    fotoCell.innerHTML = `<div class='relative inline-block group'><img src='${fotoUrl}' alt='Foto Makam' class='w-14 h-14 object-cover rounded shadow border border-gray-200 cursor-pointer foto-thumbnail' /><button type='button' class='delete-foto-btn absolute -top-2 -right-2 bg-white border border-gray-300 rounded-full w-6 h-6 flex items-center justify-center shadow text-gray-500 text-base opacity-80 hover:bg-red-500 hover:text-white transition' title='Hapus Foto'>&times;</button></div>`;
-                    
-                    // Update row attributes
-                    tr.setAttribute('data-fotourl', fotoUrl);
-                    tr.setAttribute('data-fotopublicid', fotoPublicId);
-                    
-                    // Re-attach handlers
-                    attachDeleteFotoActions();
-                    attachFotoThumbnailActions();
-                    
-                    showSuccessPopup('Foto berhasil diupload');
-                  } catch (err) {
-                    showErrorPopup('Upload Gagal', err.message);
-                  }
-                }
-              };
-            }
-          }
-          
-          // Show success message
-          showSuccessPopup('Foto berhasil dihapus');
-        }
-      );
-    };
-  });
-}
-
-// Helper function for confirmation popup
-function showConfirmationPopup(title, message, onConfirm, onCancel = null) {
-  const popup = document.createElement('div');
-  popup.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
-  popup.innerHTML = `
-    <div class="bg-white rounded-lg p-6 max-w-sm mx-4 shadow-xl">
-      <h3 class="text-lg font-semibold text-gray-900 mb-2">${title}</h3>
-      <p class="text-gray-600 mb-6">${message}</p>
-      <div class="flex gap-3 justify-center">
-        <button class="cancel-btn px-4 py-2 text-gray-600 border border-gray-300 rounded hover:bg-gray-50 transition">
-          Batal
-        </button>
-        <button class="confirm-btn px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition">
-          Hapus
-        </button>
-      </div>
-    </div>
-  `;
-  
-  document.body.appendChild(popup);
-  
-  // Handle confirm button
-  popup.querySelector('.confirm-btn').onclick = () => {
-    document.body.removeChild(popup);
-    if (onConfirm) onConfirm();
-  };
-  
-  // Handle cancel button
-  popup.querySelector('.cancel-btn').onclick = () => {
-    document.body.removeChild(popup);
-    if (onCancel) onCancel();
-  };
-  
-  // Handle click outside popup
-  popup.onclick = (e) => {
-    if (e.target === popup) {
-      document.body.removeChild(popup);
-      if (onCancel) onCancel();
-    }
-  };
-}
-
-// Custom error popup function (add this if not exists)
-function showCustomErrorPopup(title, message) {
-  // Clear any existing error popup first
-  const existingPopup = document.querySelector('.custom-error-popup');
-  if (existingPopup) {
-    existingPopup.remove();
-  }
-  
-  const popup = document.createElement('div');
-  popup.className = 'custom-error-popup fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
-  popup.innerHTML = `
-    <div class="bg-white rounded-lg p-6 max-w-sm mx-4 shadow-xl transform scale-95 transition-transform">
-      <div class="flex items-center mb-4">
-        <div class="flex-shrink-0">
-          <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 18.5c-.77.833.192 2.5 1.732 2.5z"></path>
-          </svg>
-        </div>
-        <h3 class="ml-3 text-lg font-semibold text-gray-900">${title}</h3>
-      </div>
-      <p class="text-gray-600 mb-6">${message}</p>
-      <div class="flex justify-center">
-        <button class="ok-btn px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition">
-          OK
-        </button>
-      </div>
-    </div>
-  `;
-  
-  document.body.appendChild(popup);
-  
-  // Animate in
-  setTimeout(() => {
-    popup.querySelector('div').classList.remove('scale-95');
-    popup.querySelector('div').classList.add('scale-100');
-  }, 100);
-  
-  // Handle OK button
-  popup.querySelector('.ok-btn').onclick = () => {
-    popup.querySelector('div').classList.add('scale-95');
-    setTimeout(() => {
-      if (popup.parentNode) {
-        document.body.removeChild(popup);
-      }
-    }, 150);
-  };
-  
-  // Handle click outside popup
-  popup.onclick = (e) => {
-    if (e.target === popup) {
-      popup.querySelector('div').classList.add('scale-95');
-      setTimeout(() => {
-        if (popup.parentNode) {
-          document.body.removeChild(popup);
-        }
-      }, 150);
-    }
-  };
-  
-  // Auto close after 2 seconds
-  setTimeout(() => {
-    if (popup.parentNode) {
-      popup.querySelector('div').classList.add('scale-95');
-      setTimeout(() => {
-        if (popup.parentNode) {
-          document.body.removeChild(popup);
-        }
-      }, 150);
-    }
-  }, 2000);
-}
-
-// Make sure the functions are available globally
-window.showCustomErrorPopup = showCustomErrorPopup;
-window.attachDeleteFotoActions = attachDeleteFotoActions;
-  popup.className = 'custom-error-popup fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
-  popup.innerHTML = `
-    <div class="bg-white rounded-lg p-6 max-w-sm mx-4 shadow-xl transform scale-95 transition-transform">
-      <div class="flex items-center mb-4">
-        <div class="flex-shrink-0">
-          <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 18.5c-.77.833.192 2.5 1.732 2.5z"></path>
-          </svg>
-        </div>
-        <h3 class="ml-3 text-lg font-semibold text-gray-900">${title}</h3>
-      </div>
-      <p class="text-gray-600 mb-6">${message}</p>
-      <div class="flex justify-end">
-        <button class="ok-btn px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition">
-          OK
-        </button>
-      </div>
-    </div>
-  `;
-  
-  document.body.appendChild(popup);
-  
-  // Animate in
-  setTimeout(() => {
-    popup.querySelector('div').classList.remove('scale-95');
-    popup.querySelector('div').classList.add('scale-100');
-  }, 100);
-  
-  // Handle OK button
-  popup.querySelector('.ok-btn').onclick = () => {
-    popup.querySelector('div').classList.add('scale-95');
-    setTimeout(() => {
-      if (popup.parentNode) {
-        document.body.removeChild(popup);
-      }
-    }, 150);
-  };
-  
-  // Handle click outside popup
-  popup.onclick = (e) => {
-    if (e.target === popup) {
-      popup.querySelector('div').classList.add('scale-95');
-      setTimeout(() => {
-        if (popup.parentNode) {
-          document.body.removeChild(popup);
-        }
-      }, 150);
-    }
-  };
-  
-  // Auto close after 5 seconds
-  setTimeout(() => {
-    if (popup.parentNode) {
-      popup.querySelector('div').classList.add('scale-95');
-      setTimeout(() => {
-        if (popup.parentNode) {
-          document.body.removeChild(popup);
-        }
-      }, 150);
-    }
-  }, 5000);
-}
-
-// Make sure the function is available globally
-window.showCustomErrorPopup = showCustomErrorPopup;function showCustomErrorPopup(title, message) {
-  // Clear any existing error popup first
-  const existingPopup = document.querySelector('.custom-error-popup');
-  if (existingPopup) {
-    existingPopup.remove();
-  }
-  
-  const popup = document.createElement('div');
-  popup.className = 'custom-error-popup fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
-  popup.innerHTML = `
-    <div class="bg-white rounded-lg p-6 max-w-sm mx-4 shadow-xl transform scale-95 transition-transform">
-      <div class="flex items-center mb-4">
-        <div class="flex-shrink-0">
-          <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 18.5c-.77.833.192 2.5 1.732 2.5z"></path>
-          </svg>
-        </div>
-        <h3 class="ml-3 text-lg font-semibold text-gray-900">${title}</h3>
-      </div>
-      <p class="text-gray-600 mb-6">${message}</p>
-      <div class="flex justify-center">
-        <button class="ok-btn px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition">
-          OK
-        </button>
-      </div>
-    </div>
-  `;
-  
-  document.body.appendChild(popup);
-  
-  // Animate in
-  setTimeout(() => {
-    popup.querySelector('div').classList.remove('scale-95');
-    popup.querySelector('div').classList.add('scale-100');
-  }, 100);
-  
-  // Handle OK button
-  popup.querySelector('.ok-btn').onclick = () => {
-    popup.querySelector('div').classList.add('scale-95');
-    setTimeout(() => {
-      if (popup.parentNode) {
-        document.body.removeChild(popup);
-      }
-    }, 150);
-  };
-  
-  // Handle click outside popup
-  popup.onclick = (e) => {
-    if (e.target === popup) {
-      popup.querySelector('div').classList.add('scale-95');
-      setTimeout(() => {
-        if (popup.parentNode) {
-          document.body.removeChild(popup);
-        }
-      }, 150);
-    }
-  };
-  
-  // Auto close after 2 seconds (changed from 5 seconds)
-  setTimeout(() => {
-    if (popup.parentNode) {
-      popup.querySelector('div').classList.add('scale-95');
-      setTimeout(() => {
-        if (popup.parentNode) {
-          document.body.removeChild(popup);
-        }
-      }, 150);
-    }
-  }, 2000);
-}
-
-// Make sure the function is available globally
-window.showCustomErrorPopup = showCustomErrorPopup;
-        // Pastikan hanya satu popup error muncul
+      if (checked.length === 0) {
         showCustomErrorPopup('Peringatan', 'Pilih data yang ingin dihapus!');
         return;
       }
@@ -1271,6 +542,8 @@ async function exportExcelHandler() {
       'NO HP',
       'TGL MENINGGAL',
       'TGL DIKUBUR',
+      'HUBUNGAN DENGAN ALMARHUM',
+      'ASAL JENAZAH',
       'ALAMAT',
       'BLOK',
       'BLAD',
@@ -1287,6 +560,8 @@ async function exportExcelHandler() {
         const createdAt = data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleString('id-ID') : '';
         const updatedAt = data.updatedAt ? new Date(data.updatedAt.seconds * 1000).toLocaleString('id-ID') : '';
         const lokasi = data.lokasiMakam || {};
+        
+        // Format date for display
         const formatDateForExport = (dateStr) => {
           if (!dateStr) return '';
           try {
@@ -1299,13 +574,19 @@ async function exportExcelHandler() {
             return dateStr;
           }
         };
+        
+        // Clean text data
         const cleanText = (text) => {
           if (!text) return '';
           return String(text).replace(/\s+/g, ' ').trim();
         };
-        const blok = (lokasi.blok || '').padStart(2, '0');
-        const blad = (lokasi.blad || '').padStart(2, '0');
-        const nomor = (lokasi.nomor || '').padStart(3, '0');
+        
+        // Format location data
+        const blok = cleanText(lokasi.blok || '');
+        const blad = cleanText(lokasi.blad || '');
+        const nomor = cleanText(lokasi.nomor || '');
+        
+        // Prepare row data
         const row = [
           rowNumber.toString(),
           cleanText(data.namaAlmarhum),
@@ -1313,6 +594,8 @@ async function exportExcelHandler() {
           cleanText(data.nomorHp),
           formatDateForExport(data.tanggalMeninggal || ''),
           formatDateForExport(data.tanggalDikubur || ''),
+          cleanText(data.hubunganDenganAlmarhum),
+          cleanText(data.asalJenazah),
           cleanText(data.alamat),
           blok,
           blad,
@@ -1340,6 +623,8 @@ async function exportExcelHandler() {
       { wch: 15 },
       { wch: 15 },
       { wch: 15 },
+      { wch: 20 },
+      { wch: 20 },
       { wch: 40 },
       { wch: 8 },
       { wch: 8 },
@@ -1434,104 +719,7 @@ function showFileSizeError(fileSize) {
         if (document.body.contains(errorPopup)) {
           document.body.removeChild(errorPopup);
         }
-      }, 300);function attachDeleteFotoActions() {
-  document.querySelectorAll('.delete-foto-btn').forEach(btn => {
-    btn.onclick = function(e) {
-      e.stopPropagation();
-      
-      // Show confirmation popup
-      showConfirmationPopup(
-        'Konfirmasi Hapus',
-        'Pilih data yang ingin dihapus. Apakah Anda yakin ingin menghapus foto ini?',
-        () => {
-          // Callback for confirm action - execute original deletion logic
-          const btnDiv = btn.closest('div');
-          const tr = btn.closest('tr');
-          if (!tr || !btnDiv) return;
-          
-          tr.setAttribute('data-fotourl', '');
-          tr.setAttribute('data-fotopublicid', '');
-          const fotoCell = btnDiv.closest('td');
-          if (fotoCell) fotoCell.innerHTML = `<div class="flex flex-col items-center justify-center min-h-[56px]">
-            <button type="button" class="upload-foto-btn hidden editing:inline-flex items-center justify-center w-8 h-8 bg-blue-100 border border-blue-300 rounded-lg hover:bg-blue-500 hover:text-white text-blue-600 text-lg transition mx-auto" title="Upload Foto">
-              <svg xmlns='http://www.w3.org/2000/svg' class='w-6 h-6 mx-auto block' fill='none' viewBox='0 0 24 24' stroke='currentColor'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5-5m0 0l5 5m-5-5v12' /></svg>
-            </button>
-            <input type="file" accept="image/*" class="hidden upload-foto-input" />
-          </div>`;
-          
-          // Show success message
-          showSuccessPopup('Foto berhasil dihapus');
-        }
-      );
-    };
-  });
-}
-
-// Helper function for confirmation popup
-function showConfirmationPopup(title, message, onConfirm, onCancel = null) {
-  const popup = document.createElement('div');
-  popup.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
-  popup.innerHTML = `
-    <div class="bg-white rounded-lg p-6 max-w-sm mx-4 shadow-xl">
-      <h3 class="text-lg font-semibold text-gray-900 mb-2">${title}</h3>
-      <p class="text-gray-600 mb-6">${message}</p>
-      <div class="flex gap-3 justify-end">
-        <button class="cancel-btn px-4 py-2 text-gray-600 border border-gray-300 rounded hover:bg-gray-50 transition">
-          Batal
-        </button>
-        <button class="confirm-btn px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition">
-          Hapus
-        </button>
-      </div>
-    </div>
-  `;
-  
-  document.body.appendChild(popup);
-  
-  // Handle confirm button
-  popup.querySelector('.confirm-btn').onclick = () => {
-    document.body.removeChild(popup);
-    if (onConfirm) onConfirm();
-  };
-  
-  // Handle cancel button
-  popup.querySelector('.cancel-btn').onclick = () => {
-    document.body.removeChild(popup);
-    if (onCancel) onCancel();
-  };
-  
-  // Handle click outside popup
-  popup.onclick = (e) => {
-    if (e.target === popup) {
-      document.body.removeChild(popup);
-      if (onCancel) onCancel();
-    }
-  };
-}
-
-// Helper function for success popup
-function showSuccessPopup(message) {
-  const popup = document.createElement('div');
-  popup.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform';
-  popup.textContent = message;
-  
-  document.body.appendChild(popup);
-  
-  // Animate in
-  setTimeout(() => {
-    popup.classList.remove('translate-x-full');
-  }, 100);
-  
-  // Auto remove after 3 seconds
-  setTimeout(() => {
-    popup.classList.add('translate-x-full');
-    setTimeout(() => {
-      if (popup.parentNode) {
-        document.body.removeChild(popup);
-      }
-    }, 300);
-  }, 3000);
-}
+      }, 300);
     }
   }, 5000);
 }
@@ -1630,6 +818,7 @@ window.hideLogoutPopup = function() {
 };
 
 window.logoutNow = function() {
+  localStorage.removeItem('isAdmin');
   if (window.auth) {
     window.auth.signOut().then(function() {
       window.location.href = 'LandingPage.html';
@@ -1686,12 +875,14 @@ document.addEventListener('DOMContentLoaded', function() {
       const nomorHp = document.getElementById('nomorHpModal')?.value.trim();
       const tanggalMeninggal = document.getElementById('tanggalMeninggalModal')?.value;
       const tanggalDikubur = document.getElementById('tanggalDikuburModal')?.value;
+      const hubunganDenganAlmarhum = document.getElementById('hubunganDenganAlmarhumModal')?.value.trim();
+      const asalJenazah = document.getElementById('asalJenazahModal')?.value.trim();
       const alamat = document.getElementById('alamatModal')?.value.trim();
       const blok = document.getElementById('blokModal')?.value.trim();
       const blad = document.getElementById('bladModal')?.value.trim();
       const nomor = document.getElementById('nomorModal')?.value.trim();
 
-      if (!nama || !ahliWaris || !nomorHp || !tanggalMeninggal || !tanggalDikubur || !alamat || !blok || !blad || !nomor) {
+      if (!nama || !ahliWaris || !nomorHp || !tanggalMeninggal || !tanggalDikubur || !hubunganDenganAlmarhum || !asalJenazah || !alamat || !blok || !blad || !nomor) {
         showErrorPopup('Mohon lengkapi semua data.');
         return;
       }
@@ -1704,7 +895,6 @@ document.addEventListener('DOMContentLoaded', function() {
           showFileSizeError(file.size);
           fotoInput.value = '';
           if (previewFoto) previewFoto.src = '#';
-          if (previewFotoWrapper) previewFotoWrapper.classList.add('hidden');
           if (labelFotoModal) labelFotoModal.textContent = 'Upload Foto';
           return;
         }
@@ -1770,6 +960,8 @@ document.addEventListener('DOMContentLoaded', function() {
           nomorHp: nomorHp,
           tanggalMeninggal: tanggalMeninggal,
           tanggalDikubur: tanggalDikubur,
+          hubunganDenganAlmarhum: hubunganDenganAlmarhum,
+          asalJenazah: asalJenazah,
           alamat: alamat,
           lokasiMakam: { blok, blad, nomor },
           fotoUrl,
@@ -1838,6 +1030,8 @@ document.addEventListener('DOMContentLoaded', function() {
           data.namaAlmarhum,
           data.ahliWaris,
           data.tanggalMeninggal,
+          data.hubunganDenganAlmarhum,
+          data.asalJenazah,
           data.alamat,
           data.lokasiMakam?.blok,
           data.lokasiMakam?.blad,
