@@ -369,8 +369,8 @@ function attachRowActions() {
       `;
       actions.querySelector('.save-btn').onclick = async function() {
         const id = tr.getAttribute('data-id');
-        const nama = tr.querySelector(`[data-field="namaAlmarhum"] input`).value;
-        const ahli = tr.querySelector(`[data-field="ahliWaris"] input`).value;
+        const nama = tr.querySelector(`[data-field="namaAlmarhum"] input`).value.trim();
+        const ahli = tr.querySelector(`[data-field="ahliWaris"] input`).value.trim();
         const tgl = tr.querySelector(`[data-field="tanggalMeninggal"] input`).value;
         const tglDikubur = tr.querySelector(`[data-field="tanggalDikubur"] input`)?.value || '';
         const noHp = tr.querySelector(`[data-field="nomorHp"] input`)?.value || '';
@@ -380,6 +380,16 @@ function attachRowActions() {
         const blok = tr.querySelector(`#edit-blok`).value;
         const blad = tr.querySelector(`#edit-blad`).value;
         const nomor = tr.querySelector(`#edit-nomor`).value;
+
+        // Validasi duplikasi lokasi makam (blok, blad, nomor) selain dirinya sendiri
+        const dataToCheck = {
+          lokasiMakam: { blok, blad, nomor }
+        };
+        if (checkDataExist(dataToCheck, id)) {
+          showErrorPopup('Data dengan Blad, Blok, dan Nomor ini sudah ada.');
+          return;
+        }
+
         try {
           await db.collection('pemakaman').doc(id).update({
             namaAlmarhum: nama,
@@ -832,6 +842,82 @@ window.logoutNow = function() {
 
 // Event listeners utama
 document.addEventListener('DOMContentLoaded', function() {
+  // --- AUTO NOMOR MAKAM ---
+  const blokModal = document.getElementById('blokModal');
+  const bladModal = document.getElementById('bladModal');
+  const nomorModal = document.getElementById('nomorModal');
+
+  function autoIsiNomorMakam() {
+    const blok = blokModal?.value;
+    const blad = bladModal?.value;
+    if (!blok || !blad) {
+      nomorModal.value = '';
+      return;
+    }
+    // Cari nomor terbesar pada kombinasi blok-blad
+    let maxNomor = 0;
+    allData.forEach(item => {
+      if (
+        item.lokasiMakam?.blok?.toString() === blok &&
+        item.lokasiMakam?.blad?.toString() === blad
+      ) {
+        const n = parseInt(item.lokasiMakam.nomor, 10);
+        if (!isNaN(n) && n > maxNomor) maxNomor = n;
+      }
+    });
+    if (maxNomor >= 400) {
+      nomorModal.value = '';
+      nomorModal.disabled = true;
+      nomorModal.innerHTML = '<option value="">Penuh</option>';
+      // Optional: tampilkan warning
+      if (!document.getElementById('warningNomorFull')) {
+        const warn = document.createElement('div');
+        warn.id = 'warningNomorFull';
+        warn.className = 'text-red-600 text-xs mt-1';
+        warn.innerText = 'Nomor pada Blad/Blok ini sudah penuh (400).';
+        nomorModal.parentElement.appendChild(warn);
+      }
+      return;
+    }
+    // Hapus warning jika ada
+    const warn = document.getElementById('warningNomorFull');
+    if (warn) warn.remove();
+    nomorModal.disabled = false;
+    // Isi value dengan nomor berikutnya
+    const nextNomor = maxNomor + 1;
+    nomorModal.value = nextNomor;
+    // Jika option belum ada, tambahkan
+    let found = false;
+    for (let i = 0; i < nomorModal.options.length; i++) {
+      if (nomorModal.options[i].value == nextNomor) {
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      const opt = document.createElement('option');
+      opt.value = nextNomor;
+      opt.text = nextNomor;
+      nomorModal.appendChild(opt);
+    }
+    nomorModal.value = nextNomor;
+  }
+
+  if (blokModal && bladModal && nomorModal) {
+    blokModal.addEventListener('change', autoIsiNomorMakam);
+    bladModal.addEventListener('change', autoIsiNomorMakam);
+    // Juga isi ulang jika data baru di-load
+    if (!window._autoNomorMakamLoaded) {
+      const origLoadPemakaman = window.loadPemakaman;
+      window.loadPemakaman = async function() {
+        await origLoadPemakaman.apply(this, arguments);
+        autoIsiNomorMakam();
+      }
+      window._autoNomorMakamLoaded = true;
+    }
+  }
+  // --- END AUTO NOMOR MAKAM ---
+
   setupMobileButtons();
   const openInputModalBtn = document.getElementById('openInputModalBtn');
   const closeInputModalBtn = document.getElementById('closeInputModalBtn');
@@ -913,28 +999,24 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       }
 
-      function checkDataExist(data) {
+      function checkDataExist(data, ignoreId = null) {
         // Ambil data yang sudah ada di tabel
         const existingData = allData.filter((item) => {
+          // Jika ignoreId diberikan, skip data dengan id tersebut (saat edit)
+          if (ignoreId && item.id === ignoreId) return false;
           return (
-            item.namaAlmarhum.trim().toLowerCase() === data.namaAlmarhum.trim().toLowerCase() &&
-            item.ahliWaris.trim().toLowerCase() === data.ahliWaris.trim().toLowerCase() &&
-            item.nomorHp === data.nomorHp &&
-            item.alamat === data.alamat &&
-            item.lokasiMakam.blok === data.lokasiMakam.blok &&
-            item.lokasiMakam.blad === data.lokasiMakam.blad &&
-            item.lokasiMakam.nomor === data.lokasiMakam.nomor
+            item.lokasiMakam.blok?.trim().toLowerCase() === data.lokasiMakam.blok?.trim().toLowerCase() &&
+            item.lokasiMakam.blad?.trim().toLowerCase() === data.lokasiMakam.blad?.trim().toLowerCase() &&
+            item.lokasiMakam.nomor?.trim().toLowerCase() === data.lokasiMakam.nomor?.trim().toLowerCase()
           );
         });
-      
         // Jika data sudah ada, return true
         if (existingData.length > 0) {
           return true;
         }
-      
         return false;
       }
-      
+
       try {
         // Cek apakah data sudah ada
         const dataToCheck = {
@@ -1083,4 +1165,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   loadPemakaman();
+
 });
+
+
