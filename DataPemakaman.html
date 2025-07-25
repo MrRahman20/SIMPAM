@@ -233,14 +233,7 @@
                   </div>
                   <div>
                     <label class="block text-[#6b7280] text-xs mb-1" for="nomorModal">Nomor</label>
-                    <select id="nomorModal" name="nomor" class="rounded-lg border border-[#d1d5db] w-full h-12 px-4 focus:outline-none focus:ring-2 focus:ring-blue-400">
-                      <option value="">Pilih Nomor</option>
-                      <script>
-                        for (let i = 1; i <= 400; i++) {
-                          document.write(`<option value="${i}">${i}</option>`);
-                        }
-                      </script>
-                    </select>
+                    <input id="nomorModal" name="nomor" type="text" class="rounded-lg border border-[#d1d5db] w-full h-12 px-4 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-100" placeholder="Nomor otomatis" readonly />
                   </div>
                 </div>
               </div>
