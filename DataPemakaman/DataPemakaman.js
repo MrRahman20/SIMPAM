@@ -9,6 +9,26 @@ const firebaseConfig = {
   measurementId: "G-7FJ5FWW44N"
 };
 
+// --- GLOBAL DUPLICATE CHECK FUNCTION ---
+function checkDataExist(data, ignoreId = null) {
+  // Ambil data yang sudah ada di tabel
+  const existingData = allData.filter((item) => {
+    // Jika ignoreId diberikan, skip data dengan id tersebut (saat edit)
+    if (ignoreId && item.id === ignoreId) return false;
+    return (
+      item.lokasiMakam.blok?.trim().toLowerCase() === data.lokasiMakam.blok?.trim().toLowerCase() &&
+      item.lokasiMakam.blad?.trim().toLowerCase() === data.lokasiMakam.blad?.trim().toLowerCase() &&
+      item.lokasiMakam.nomor?.trim().toLowerCase() === data.lokasiMakam.nomor?.trim().toLowerCase()
+    );
+  });
+  // Jika data sudah ada, return true
+  if (existingData.length > 0) {
+    return true;
+  }
+  return false;
+}
+window.checkDataExist = checkDataExist;
+
 // Inisialisasi Firebase dan Auth
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
@@ -121,14 +141,18 @@ function renderTable() {
         <td class="p-3 break-words max-w-xs font-medium text-[#1f2937]" data-field="namaAlmarhum">${data.namaAlmarhum || '-'}</td>
         <td class="p-3 break-words max-w-xs text-gray-500" data-field="ahliWaris">${data.ahliWaris || '-'}</td>
         <td class="p-3 break-words max-w-xs text-gray-500" data-field="nomorHp">${data.nomorHp || '-'}</td>
-        <td class="p-3 break-words max-w-xs text-gray-500" data-field="tanggalMeninggal">${data.tanggalMeninggal || '-'}</td>
-        <td class="p-3 break-words max-w-xs text-gray-500" data-field="tanggalDikubur">${data.tanggalDikubur || '-'}</td>
+        <td class="p-3 break-words max-w-xs" data-field="tanggalMeninggal">
+  ${data.tanggalMeninggal ? `<span class="inline-flex items-center gap-1 text-gray-800 font-medium px-2 py-1 rounded"><svg class='w-4 h-4 text-blue-400' fill='none' stroke='currentColor' stroke-width='2' viewBox='0 0 24 24'><rect x='3' y='4' width='18' height='18' rx='2' stroke='currentColor' /><path d='M16 2v4M8 2v4M3 10h18' stroke='currentColor'/></svg>${data.tanggalMeninggal}</span>` : `<span class="text-gray-400">-</span>`}
+</td>
+<td class="p-3 break-words max-w-xs" data-field="tanggalDikubur">
+  ${data.tanggalDikubur ? `<span class="inline-flex items-center gap-1 text-gray-800 font-medium px-2 py-1 rounded"><svg class='w-4 h-4 text-blue-400' fill='none' stroke='currentColor' stroke-width='2' viewBox='0 0 24 24'><rect x='3' y='4' width='18' height='18' rx='2' stroke='currentColor' /><path d='M16 2v4M8 2v4M3 10h18' stroke='currentColor'/></svg>${data.tanggalDikubur}</span>` : `<span class="text-gray-400">-</span>`}
+</td>
         <td class="p-3 break-words max-w-xs text-gray-500" data-field="hubunganDenganAlmarhum">${data.hubunganDenganAlmarhum || '-'}</td>
         <td class="p-3 break-words max-w-xs text-gray-500" data-field="asalJenazah">${data.asalJenazah || '-'}</td>
-        <td class="p-3 break-words max-w-xs text-gray-500" data-field="alamat">${data.alamat || '-'}</td>
-        <td class="p-3 break-words max-w-xs text-gray-500" data-field="lokasiMakam" data-blok="${data.lokasiMakam?.blok || ''}" data-blad="${data.lokasiMakam?.blad || ''}" data-nomor="${data.lokasiMakam?.nomor || ''}">
-          ${data.lokasiMakam?.blok ? `Blok ${data.lokasiMakam.blok}` : ''}${data.lokasiMakam?.blad ? `, Blad ${data.lokasiMakam.blad}` : ''}${data.lokasiMakam?.nomor ? `, No. ${data.lokasiMakam.nomor}` : ''}
-        </td>
+        <td class="p-3 break-words max-w-xs text-gray-500" dtaa-field="alamat">${data.alamat || '-'}</td>
+        <td class="p-3 break-words max-w-xs text-center font-medium text-gray-700" data-field="lokasiMakam" data-blok="${data.lokasiMakam?.blok || ''}" data-blad="${data.lokasiMakam?.blad || ''}" data-nomor="${data.lokasiMakam?.nomor || ''}">
+  ${data.lokasiMakam?.blok || data.lokasiMakam?.blad || data.lokasiMakam?.nomor ? [data.lokasiMakam?.blok, data.lokasiMakam?.blad, data.lokasiMakam?.nomor].filter(Boolean).join(', ') : '<span class="text-gray-400">-</span>'}
+</td>
         <td class="p-3 text-center">
           ${data.fotoUrl 
             ? `<div class="relative inline-block group">
@@ -350,12 +374,41 @@ function attachRowActions() {
         } else {
           original[f] = td.textContent;
           let inputHtml = '';
-          if(f==='tanggalMeninggal' || f==='tanggalDikubur') {
-            inputHtml = `<input type="date" value="${td.textContent}" class="border rounded px-2 py-1 w-full" />`;
+          if(f==='hubunganDenganAlmarhum') {
+            const options = ['Anak','Ibu','Ayah','Istri','Suami','Kerabat'];
+            let current = td.textContent.trim();
+            inputHtml = `<select class="border rounded px-2 py-1 w-full hubungan-select">
+              <option value="">Pilih Hubungan</option>
+              ${options.map(opt => `<option value="${opt}"${opt === current ? ' selected' : ''}>${opt}</option>`).join('')}
+            </select>`;
+          } else if(f==='tanggalMeninggal' || f==='tanggalDikubur') {
+            // Pastikan value tanggal valid yyyy-mm-dd
+            let val = td.textContent.trim();
+            if(!/^\d{4}-\d{2}-\d{2}$/.test(val)) {
+              // Coba konversi dari format lain (misal dd/mm/yyyy)
+              const parts = val.split(/[\/-]/);
+              if(parts.length === 3) {
+                if(parts[2].length === 4) val = `${parts[2]}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}`;
+              } else {
+                val = '';
+              }
+            }
+            inputHtml = `<input type="date" value="${val}" class="border rounded px-2 py-1 w-full" placeholder="YYYY-MM-DD" />`;
           } else {
-            inputHtml = `<input type="text" value="${td.textContent}" class="border rounded px-2 py-1 w-full" />`;
+            let val = td.textContent.trim();
+            inputHtml = `<input type="text" value="${val}" class="border rounded px-2 py-1 w-full" placeholder="(isi data)" />`;
           }
           td.innerHTML = inputHtml;
+          // Tambah event click pada opsi markdown list
+          if(f==='hubunganDenganAlmarhum') {
+            td.querySelectorAll('li[data-value]').forEach(li => {
+              li.addEventListener('click', function() {
+                td.querySelectorAll('li[data-value]').forEach(l => l.classList.remove('bg-blue-200','font-bold'));
+                this.classList.add('bg-blue-200','font-bold');
+                td.querySelector('.hubungan-value').value = this.getAttribute('data-value');
+              });
+            });
+          }
         }
       });
       const actions = tr.querySelector('[data-actions]');
@@ -368,24 +421,60 @@ function attachRowActions() {
         </button>
       `;
       actions.querySelector('.save-btn').onclick = async function() {
+  // Helper for date validation
+  function isValidDateYMD(val) {
+    if (!val) return false;
+    // yyyy-mm-dd
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(val)) return false;
+    const d = new Date(val);
+    return !isNaN(d.getTime()) && d.toISOString().slice(0,10) === val;
+  }
         const id = tr.getAttribute('data-id');
-        const nama = tr.querySelector(`[data-field="namaAlmarhum"] input`).value.trim();
-        const ahli = tr.querySelector(`[data-field="ahliWaris"] input`).value.trim();
-        const tgl = tr.querySelector(`[data-field="tanggalMeninggal"] input`).value;
-        const tglDikubur = tr.querySelector(`[data-field="tanggalDikubur"] input`)?.value || '';
-        const noHp = tr.querySelector(`[data-field="nomorHp"] input`)?.value || '';
-        const hubungan = tr.querySelector(`[data-field="hubunganDenganAlmarhum"] input`)?.value || '';
-        const asalJenazah = tr.querySelector(`[data-field="asalJenazah"] input`)?.value || '';
-        const alamat = tr.querySelector(`[data-field="alamat"] input`).value;
-        const blok = tr.querySelector(`#edit-blok`).value;
-        const blad = tr.querySelector(`#edit-blad`).value;
-        const nomor = tr.querySelector(`#edit-nomor`).value;
+        // Helper ambil input
+        const getInputValue = (selector) => {
+          const el = tr.querySelector(selector);
+          return el ? el.value.trim() : '';
+        };
+        const nama = getInputValue(`[data-field="namaAlmarhum"] input`);
+        const ahli = getInputValue(`[data-field="ahliWaris"] input`);
+        const tgl = getInputValue(`[data-field="tanggalMeninggal"] input`);
+        const tglDikubur = getInputValue(`[data-field="tanggalDikubur"] input`);
+        // Validasi tanggal wajib & format
+        if (!isValidDateYMD(tgl)) {
+          showErrorPopup('Tanggal meninggal wajib diisi dan harus format YYYY-MM-DD');
+          return;
+        }
+        if (!isValidDateYMD(tglDikubur)) {
+          showErrorPopup('Tanggal dikubur wajib diisi dan harus format YYYY-MM-DD');
+          return;
+        }
+        const noHp = getInputValue(`[data-field="nomorHp"] input`);
+        // Ambil value dari select jika ada (dropdown)
+        let hubungan = '';
+        const hubunganSelect = tr.querySelector(`[data-field="hubunganDenganAlmarhum"] .hubungan-select`);
+        if(hubunganSelect) {
+          hubungan = hubunganSelect.value.trim();
+        } else {
+          hubungan = getInputValue(`[data-field="hubunganDenganAlmarhum"] input`);
+        }
+        const asalJenazah = getInputValue(`[data-field="asalJenazah"] input`);
+        const alamat = getInputValue(`[data-field="alamat"] input`);
+        const blok = getInputValue(`#edit-blok`);
+        const blad = getInputValue(`#edit-blad`);
+        const nomor = getInputValue(`#edit-nomor`);
+        // Debug log
+        console.log('UPDATE DATA:', {nama, ahli, tgl, tglDikubur, noHp, hubungan, asalJenazah, alamat, blok, blad, nomor});
+        // Validasi wajib
+        if (!nama || !ahli || !tgl || !tglDikubur || !noHp || !hubungan || !asalJenazah || !alamat || !blok || !blad || !nomor) {
+          showErrorPopup('Gagal Update', 'Semua field wajib diisi!');
+          return;
+        }
 
         // Validasi duplikasi lokasi makam (blok, blad, nomor) selain dirinya sendiri
         const dataToCheck = {
           lokasiMakam: { blok, blad, nomor }
         };
-        if (checkDataExist(dataToCheck, id)) {
+        if (window.checkDataExist(dataToCheck, id)) {
           showErrorPopup('Data dengan Blad, Blok, dan Nomor ini sudah ada.');
           return;
         }
@@ -999,23 +1088,24 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       }
 
-      function checkDataExist(data, ignoreId = null) {
-        // Ambil data yang sudah ada di tabel
-        const existingData = allData.filter((item) => {
-          // Jika ignoreId diberikan, skip data dengan id tersebut (saat edit)
-          if (ignoreId && item.id === ignoreId) return false;
-          return (
-            item.lokasiMakam.blok?.trim().toLowerCase() === data.lokasiMakam.blok?.trim().toLowerCase() &&
-            item.lokasiMakam.blad?.trim().toLowerCase() === data.lokasiMakam.blad?.trim().toLowerCase() &&
-            item.lokasiMakam.nomor?.trim().toLowerCase() === data.lokasiMakam.nomor?.trim().toLowerCase()
-          );
-        });
-        // Jika data sudah ada, return true
-        if (existingData.length > 0) {
-          return true;
-        }
-        return false;
-      }
+function checkDataExist(data, ignoreId = null) {
+  // Ambil data yang sudah ada di tabel
+  const existingData = allData.filter((item) => {
+    // Jika ignoreId diberikan, skip data dengan id tersebut (saat edit)
+    if (ignoreId && item.id === ignoreId) return false;
+    return (
+      item.lokasiMakam.blok?.trim().toLowerCase() === data.lokasiMakam.blok?.trim().toLowerCase() &&
+      item.lokasiMakam.blad?.trim().toLowerCase() === data.lokasiMakam.blad?.trim().toLowerCase() &&
+      item.lokasiMakam.nomor?.trim().toLowerCase() === data.lokasiMakam.nomor?.trim().toLowerCase()
+    );
+  });
+  // Jika data sudah ada, return true
+  if (existingData.length > 0) {
+    return true;
+  }
+  return false;
+}
+window.checkDataExist = checkDataExist;
 
       try {
         // Cek apakah data sudah ada
@@ -1140,6 +1230,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const id = window.deleteTargetId;
     await db.collection('pemakaman').doc(id).delete();
     document.getElementById('deletePopup').classList.add('hidden');
+    showSuccessPopup('Data berhasil dihapus!');
     await loadPemakaman();
   });
   document.getElementById('cancelDeleteBtn')?.addEventListener('click', function() {
