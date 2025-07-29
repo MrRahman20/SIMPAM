@@ -69,11 +69,11 @@
     </div>
   </header>
   <main class="container mx-auto px-2 sm:px-4 py-6">
-    <button class="bg-[#2563eb] text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition mb-4" id="backButton" style="border-radius: 12px;">
-      <a href="LandingPage.html">
-        Kembali
-      </a>
-    </button>
+    <a href="LandingPage.html" id="backButton" class="inline-flex items-center bg-[#2563eb] text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition mb-4" style="border-radius: 12px;">
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.2" stroke="currentColor" class="w-6 h-6 mr-2">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+  </svg>
+</a>
     <div class="bg-white rounded-xl shadow-lg border border-[#e5e7eb] p-6">
       <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
         <div class="flex gap-2 items-center mt-2 md:mt-0">
@@ -149,6 +149,7 @@
                   <option value="Suami">Suami</option>
                   <option value="Kerabat">Kerabat</option>
                 </select>
+
               </div>
               <div>
                 <label class="block text-[#374151] font-medium text-sm mb-1" for="asalJenazahModal">Asal Jenazah</label>
