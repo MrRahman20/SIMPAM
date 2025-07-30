@@ -149,7 +149,7 @@ function renderTable() {
 </td>
         <td class="p-3 break-words max-w-xs text-gray-500" data-field="hubunganDenganAlmarhum">${data.hubunganDenganAlmarhum || '-'}</td>
         <td class="p-3 break-words max-w-xs text-gray-500" data-field="asalJenazah">${data.asalJenazah || '-'}</td>
-        <td class="p-3 break-words max-w-xs text-gray-500" dtaa-field="alamat">${data.alamat || '-'}</td>
+        <td class="p-3 break-words max-w-xs text-gray-500" data-field="alamat">${data.alamat || '-'}</td>
         <td class="p-3 break-words max-w-xs text-center font-medium text-gray-700" data-field="lokasiMakam" data-blok="${data.lokasiMakam?.blok || ''}" data-blad="${data.lokasiMakam?.blad || ''}" data-nomor="${data.lokasiMakam?.nomor || ''}">
   ${data.lokasiMakam?.blok || data.lokasiMakam?.blad || data.lokasiMakam?.nomor ? [data.lokasiMakam?.blok, data.lokasiMakam?.blad, data.lokasiMakam?.nomor].filter(Boolean).join(', ') : '<span class="text-gray-400">-</span>'}
 </td>
@@ -394,6 +394,46 @@ function attachRowActions() {
               }
             }
             inputHtml = `<input type="date" value="${val}" class="border rounded px-2 py-1 w-full" placeholder="YYYY-MM-DD" />`;
+          } else if(f==='asalJenazah') {
+            let val = td.textContent.trim();
+            // dropdown asal jenazah
+            const options = `
+              <option value="" disabled>Pilih Asal Jenazah</option>
+              <optgroup label="Rumah Sakit">
+                <option value="Rumah sakit">Rumah sakit (lainnya)</option>
+                <option value="RSUD Cilincing">RSUD Cilincing</option>
+                <option value="RSUD koja">RSUD koja</option>
+                <option value="RSUD pademangan">RSUD pademangan</option>
+                <option value="RSUD tanjung priok">RSUD tanjung priok</option>
+                <option value="RSUD tugu koja">RSUD tugu koja</option>
+                <option value="RS atma jaya">RS atma jaya</option>
+                <option value="RS darurat wisma atlet">RS darurat wisma atlet</option>
+                <option value="RS duta indah">RS duta indah</option>
+                <option value="RS hermina podomoro">RS hermina podomoro</option>
+                <option value="RS islam jakarta sukapura">RS islam jakarta sukapura</option>
+                <option value="RS mitra keluarga kelapa gading">RS mitra keluarga kelapa gading</option>
+                <option value="Rs prismana">Rs prismana</option>
+                <option value="Rs gading pluit">Rs gading pluit</option>
+                <option value="RSUD pantai indah kapuk">RSUD pantai indah kapuk</option>
+                <option value="RSU pluit">RSU pluit</option>
+              </optgroup>
+              <optgroup label="Puskesmas">
+                <option value="Puskesmas">Puskesmas (lainnya)</option>
+                <option value="Puskesman kecamatan penjaringan">Puskesman kecamatan penjaringan</option>
+                <option value="Puskesmas kecamatan pademangan">Puskesmas kecamatan pademangan</option>
+                <option value="Puskesmas kecamatan tanjujg priok">Puskesmas kecamatan tanjujg priok</option>
+                <option value="Puskesmas kecamatan kota">Puskesmas kecamatan kota</option>
+                <option value="Puskesmas kecamatan kelapa gading">Puskesmas kecamatan kelapa gading</option>
+                <option value="Puskesmas kecamatan cilincing">Puskesmas kecamatan cilincing</option>
+                <option value="Puskesmas kecamatan rorotan">Puskesmas kecamatan rorotan</option>
+                <option value="Puskesmas kecamatan marunda">Puskesmas kecamatan marunda</option>
+              </optgroup>
+            `;
+            inputHtml = `<select class="border rounded px-2 py-1 w-full" >${options}</select>`;
+            td.innerHTML = inputHtml;
+            // set value lama
+            const select = td.querySelector('select');
+            if(select) select.value = val;
           } else {
             let val = td.textContent.trim();
             inputHtml = `<input type="text" value="${val}" class="border rounded px-2 py-1 w-full" placeholder="(isi data)" />`;
