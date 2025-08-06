@@ -969,8 +969,654 @@ window.logoutNow = function() {
   }
 };
 
+// Fungsi untuk mengambil data mingguan
+async function fetchWeeklyData() {
+  try {
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6); // 7 hari termasuk hari ini
+    
+    const data = [];
+    const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+    
+    // Inisialisasi data untuk 7 hari terakhir
+    for (let i = 0; i < 7; i++) {
+      const date = new Date();
+      date.setDate(date.getDate() - (6 - i));
+      const dayName = days[date.getDay()];
+      const dateStr = date.toISOString().split('T')[0];
+      data.push({
+        date: dateStr,
+        day: dayName,
+        count: 0
+      });
+    }
+    
+    // Ambil data dari Firestore
+    const snapshot = await db.collection('pemakaman')
+      .where('createdAt', '>=', firebase.firestore.Timestamp.fromDate(sevenDaysAgo))
+      .get();
+    
+    // Hitung data per hari
+    snapshot.forEach(doc => {
+      const docData = doc.data();
+      if (docData.createdAt) {
+        const docDate = docData.createdAt.toDate().toISOString().split('T')[0];
+        const dayData = data.find(item => item.date === docDate);
+        if (dayData) {
+          dayData.count++;
+        }
+      }
+    });
+    
+    return data;
+  } catch (error) {
+    console.error('Error fetching weekly data:', error);
+    throw error;
+  }
+}
+
+// Fungsi untuk menggambar grafik batang sederhana
+function drawBarChart(canvas, data, labels) {
+  const ctx = canvas.getContext('2d');
+  const width = canvas.width;
+  const height = canvas.height;
+  const padding = 40;
+  const barWidth = 40;
+  const gap = 20;
+  const maxValue = Math.max(...data);
+  const scale = (height - padding * 2) / (maxValue || 1);
+  
+  // Bersihkan canvas
+  ctx.clearRect(0, 0, width, height);
+  
+  // Gambar sumbu
+  ctx.beginPath();
+  ctx.moveTo(padding, padding);
+  ctx.lineTo(padding, height - padding);
+  ctx.lineTo(width - padding, height - padding);
+  ctx.strokeStyle = '#000';
+  ctx.stroke();
+  
+  // Gambar grid dan label sumbu Y
+  ctx.textAlign = 'right';
+  ctx.textBaseline = 'middle';
+  ctx.font = '10px Arial';
+  
+  for (let i = 0; i <= maxValue; i++) {
+    const y = height - padding - (i * scale);
+    ctx.beginPath();
+    ctx.moveTo(padding, y);
+    ctx.lineTo(width - padding, y);
+    ctx.strokeStyle = '#eee';
+    ctx.stroke();
+    
+    ctx.fillStyle = '#000';
+    ctx.fillText(i.toString(), padding - 5, y);
+  }
+  
+  // Gambar batang
+  for (let i = 0; i < data.length; i++) {
+    const x = padding + i * (barWidth + gap);
+    const barHeight = data[i] * scale;
+    
+    // Gambar batang
+    ctx.fillStyle = 'rgba(54, 162, 235, 0.7)';
+    ctx.fillRect(x, height - padding - barHeight, barWidth, barHeight);
+    
+    // Tambahkan label di bawah sumbu X
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    ctx.fillStyle = '#000';
+    
+    // Potong teks jika terlalu panjang
+    let label = labels[i];
+    if (label.length > 4) {
+      label = label.substring(0, 3) + '.';
+    }
+    
+    ctx.fillText(label, x + barWidth / 2, height - padding + 5);
+  }
+}
+
+// Fungsi untuk menampilkan grafik
+function showWeeklyChart() {
+  console.log('Mencoba menampilkan grafik...');
+  
+  // Dapatkan elemen yang diperlukan
+  const popup = document.getElementById('weeklyChartPopup');
+  const chartContainer = document.getElementById('chart-container');
+  
+  if (!chartContainer) {
+    console.error('Chart container tidak ditemukan');
+    showErrorPopup('Error', 'Container grafik tidak ditemukan');
+    return;
+  }
+  
+  // Tampilkan popup terlebih dahulu
+  popup.classList.remove('hidden');
+  
+  // Tampilkan loading
+  showLoadingPopup('Menyiapkan grafik...');
+  
+  // Tunggu sebentar untuk memastikan popup sudah ditampilkan
+  setTimeout(() => {
+    try {
+      // Data contoh
+      const data = [12, 19, 3, 5, 2, 3, 7];
+      const labels = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
+      
+      // Buat elemen canvas
+      chartContainer.innerHTML = `
+        <div style="width: 100%; height: 400px; position: relative;">
+          <canvas id="weeklyChart" style="width: 100%; height: 100%;"></canvas>
+        </div>
+      `;
+      
+      const canvas = document.getElementById('weeklyChart');
+      
+      // Set ukuran canvas
+      const container = canvas.parentElement;
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = container.clientWidth * dpr;
+      canvas.height = container.clientHeight * dpr;
+      canvas.style.width = '100%';
+      canvas.style.height = '100%';
+      const ctx = canvas.getContext('2d');
+      ctx.scale(dpr, dpr);
+      
+      // Gambar grafik
+      drawBarChart(canvas, data, labels);
+      
+      // Simpan referensi canvas
+      window.weeklyChart = canvas;
+      
+      console.log('Grafik berhasil dibuat');
+      hideLoadingPopup();
+      
+      // Handle resize
+      window.addEventListener('resize', function() {
+        if (window.weeklyChart) {
+          const container = window.weeklyChart.parentElement;
+          const dpr = window.devicePixelRatio || 1;
+          window.weeklyChart.width = container.clientWidth * dpr;
+          window.weeklyChart.height = container.clientHeight * dpr;
+          const ctx = window.weeklyChart.getContext('2d');
+          ctx.scale(dpr, dpr);
+          drawBarChart(window.weeklyChart, data, labels);
+        }
+      });
+      
+    } catch (error) {
+      console.error('Error saat membuat grafik:', error);
+      hideLoadingPopup();
+      showErrorPopup('Error', 'Gagal membuat grafik: ' + (error.message || 'Terjadi kesalahan'));
+      popup.classList.add('hidden');
+    }
+  }, 100);
+}
+
+// Fungsi untuk menampilkan grafik mingguan
+async function tampilkanGrafikMingguan() {
+  try {
+    showLoadingPopup('Memuat data grafik...');
+
+    // Ambil filter bulan dan tahun
+    const monthSelect = document.getElementById('weekMonthSelect');
+    const yearSelect = document.getElementById('weekYearSelect');
+    const selectedMonth = monthSelect ? parseInt(monthSelect.value) : (new Date().getMonth() + 1);
+    const selectedYear = yearSelect ? parseInt(yearSelect.value) : (new Date().getFullYear());
+
+    // Coba ambil data jika belum ada
+    if (!window.allData || window.allData.length === 0) {
+      try {
+        const db = firebase.firestore();
+        const snapshot = await db.collection('pemakaman').get();
+        if (snapshot.empty) throw new Error('Tidak ada data pemakaman yang ditemukan.');
+        window.allData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      } catch (error) {
+        throw new Error('Gagal memuat data pemakaman: ' + error.message);
+      }
+    }
+
+    // Hitung jumlah data per minggu (1 bulan = 4 minggu)
+    const weeklyCount = [0, 0, 0, 0]; // Minggu ke-1 s/d ke-4
+    let hasValidData = false;
+    window.allData.forEach(data => {
+      if (!data || !data.tanggalDikubur) return;
+      const date = new Date(data.tanggalDikubur);
+      if (isNaN(date.getTime())) return;
+      const year = date.getFullYear();
+      const month = date.getMonth() + 1;
+      const day = date.getDate();
+      if (year !== selectedYear || month !== selectedMonth) return;
+      hasValidData = true;
+      if (day >= 1 && day <= 7) weeklyCount[0]++;
+      else if (day >= 8 && day <= 14) weeklyCount[1]++;
+      else if (day >= 15 && day <= 21) weeklyCount[2]++;
+      else weeklyCount[3]++;
+    });
+
+    // Jika tidak ada data, tetap tampilkan chart dengan semua bar 0
+    const labels = ['Minggu ke-1', 'Minggu ke-2', 'Minggu ke-3', 'Minggu ke-4'];
+    const data = weeklyCount;
+
+    const canvas = document.getElementById('grafikMingguanChart');
+    if (!canvas) throw new Error('Elemen canvas tidak ditemukan');
+    const ctx = canvas.getContext('2d');
+    if (!ctx) throw new Error('Tidak bisa mendapatkan context canvas');
+    if (window.chartInstance) window.chartInstance.destroy();
+    window.chartInstance = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Jumlah Pemakaman per Minggu',
+          data,
+          backgroundColor: '#2563eb',
+          borderRadius: 6,
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          title: {
+            display: true,
+            text: `Statistik Mingguan Pemakaman - ${monthSelect.options[monthSelect.selectedIndex].text} ${selectedYear}`,
+            font: { size: 16 },
+            padding: { bottom: 20 }
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: { precision: 0, stepSize: 1 },
+            title: { display: true, text: 'Jumlah' }
+          },
+          x: {
+            title: { display: true, text: 'Minggu' }
+          }
+        }
+      }
+    });
+
+    // Tampilkan popup
+    const popup = document.getElementById('weeklyChartPopup');
+    if (popup) popup.classList.remove('hidden');
+  } catch (error) {
+    showErrorPopup('Error', error.message || 'Gagal menampilkan grafik');
+  } finally {
+    hideLoadingPopup();
+  }
+}
+
+// Global variables untuk chart
+let currentChartType = 'weekly';
+let currentSelectedMonth = null;
+let currentSelectedYear = new Date().getFullYear();
+
+// Fungsi untuk menampilkan grafik bulanan
+async function tampilkanGrafikBulanan(selectedMonth = null, selectedYear = null) {
+  try {
+    showLoadingPopup('Memuat data grafik bulanan...');
+    
+    const year = selectedYear || currentSelectedYear;
+    const month = selectedMonth || currentSelectedMonth;
+    
+    if (!window.allData || window.allData.length === 0) {
+      try {
+        const db = firebase.firestore();
+        const snapshot = await db.collection('pemakaman').get();
+        
+        if (snapshot.empty) {
+          throw new Error('Tidak ada data pemakaman yang ditemukan.');
+        }
+        
+        window.allData = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+      } catch (error) {
+        throw new Error('Gagal memuat data pemakaman: ' + error.message);
+      }
+    }
+
+    // Filter data berdasarkan bulan dan tahun
+    const monthlyCount = {};
+    let hasValidData = false;
+
+    window.allData.forEach(data => {
+      if (!data || !data.tanggalDikubur) return;
+      
+      const date = new Date(data.tanggalDikubur);
+      if (isNaN(date.getTime())) return;
+      
+      const dataYear = date.getFullYear();
+      const dataMonth = date.getMonth() + 1; // getMonth() returns 0-11
+      
+      // Filter berdasarkan tahun
+      if (dataYear !== year) return;
+      
+      // Jika bulan dipilih, filter berdasarkan bulan
+      if (month && dataMonth !== parseInt(month)) return;
+      
+      hasValidData = true;
+      
+      if (month) {
+        // Jika bulan dipilih, tampilkan per hari dalam bulan tersebut
+        const day = date.getDate();
+        const key = `${day}`;
+        monthlyCount[key] = (monthlyCount[key] || 0) + 1;
+      } else {
+        // Jika tidak ada bulan dipilih, tampilkan per bulan dalam tahun
+        const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+        const key = monthNames[dataMonth - 1];
+        monthlyCount[key] = (monthlyCount[key] || 0) + 1;
+      }
+    });
+
+    if (!hasValidData) {
+      throw new Error('Tidak ada data untuk periode yang dipilih.');
+    }
+
+    // Urutkan data
+    let labels, data;
+    if (month) {
+      // Untuk tampilan harian dalam bulan
+      const daysInMonth = new Date(year, parseInt(month), 0).getDate();
+      labels = [];
+      data = [];
+      for (let i = 1; i <= daysInMonth; i++) {
+        labels.push(i.toString());
+        data.push(monthlyCount[i.toString()] || 0);
+      }
+    } else {
+      // Untuk tampilan bulanan dalam tahun
+      const monthOrder = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+      labels = monthOrder;
+      data = monthOrder.map(month => monthlyCount[month] || 0);
+    }
+
+    const canvas = document.getElementById('grafikMingguanChart');
+    if (!canvas) {
+      throw new Error('Elemen canvas tidak ditemukan');
+    }
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      throw new Error('Tidak bisa mendapatkan context canvas');
+    }
+
+    // Hapus chart lama jika ada
+    if (window.chartInstance) {
+      window.chartInstance.destroy();
+    }
+
+    // Buat chart baru
+    window.chartInstance = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          label: month ? 'Jumlah Pemakaman per Hari' : 'Jumlah Pemakaman per Bulan',
+          data,
+          backgroundColor: '#10b981',
+          borderRadius: 6,
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { 
+            display: false 
+          },
+          title: {
+            display: true,
+            text: month ? `Statistik Harian` : `Statistik Bulanan`,
+            font: {
+              size: 16
+            },
+            padding: {
+              bottom: 20
+            }
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: { 
+              precision: 0,
+              stepSize: 1
+            },
+            title: {
+              display: true,
+              text: 'Jumlah'
+            }
+          },
+          x: {
+            title: {
+              display: true,
+              text: month ? 'Hari' : 'Bulan'
+            }
+          }
+        }
+      }
+    });
+
+    // Tampilkan popup
+    const popup = document.getElementById('weeklyChartPopup');
+    if (popup) {
+      popup.classList.remove('hidden');
+    }
+    
+  } catch (error) {
+    console.error('Error saat menampilkan grafik bulanan:', error);
+    showErrorPopup('Error', error.message || 'Gagal menampilkan grafik bulanan');
+  } finally {
+    hideLoadingPopup();
+  }
+}
+
+// Fungsi untuk populate year select
+function populateYearSelect() {
+  const yearSelect = document.getElementById('yearSelect');
+  if (!yearSelect) return;
+  
+  const currentYear = new Date().getFullYear();
+  const startYear = currentYear - 5; // 5 tahun ke belakang
+  const endYear = currentYear + 1; // 1 tahun ke depan
+  
+  yearSelect.innerHTML = '';
+  
+  for (let year = endYear; year >= startYear; year--) {
+    const option = document.createElement('option');
+    option.value = year;
+    option.textContent = year;
+    if (year === currentYear) {
+      option.selected = true;
+    }
+    yearSelect.appendChild(option);
+  }
+}
+
+// Fungsi untuk populate chart year select dengan data yang tersedia
+function populateChartYearSelect() {
+  const chartYearSelect = document.getElementById('chartYearSelect');
+  if (!chartYearSelect) return;
+  
+  // Ambil tahun dari data yang tersedia
+  const availableYears = new Set();
+  
+  if (window.allData && window.allData.length > 0) {
+    window.allData.forEach(data => {
+      if (data.tanggalDikubur) {
+        const date = new Date(data.tanggalDikubur);
+        if (!isNaN(date.getTime())) {
+          availableYears.add(date.getFullYear());
+        }
+      }
+    });
+  }
+  
+  // Jika tidak ada data, gunakan tahun saat ini
+  if (availableYears.size === 0) {
+    availableYears.add(new Date().getFullYear());
+  }
+  
+  // Urutkan tahun dari terbaru ke terlama
+  const sortedYears = Array.from(availableYears).sort((a, b) => b - a);
+  
+  chartYearSelect.innerHTML = '';
+  
+  sortedYears.forEach((year, index) => {
+    const option = document.createElement('option');
+    option.value = year;
+    option.textContent = year;
+    if (index === 0) { // Pilih tahun terbaru sebagai default
+      option.selected = true;
+    }
+    chartYearSelect.appendChild(option);
+  });
+}
+
+// Fungsi untuk populate week year select (dropdown tahun mingguan)
+function populateWeekYearSelect() {
+  const weekYearSelect = document.getElementById('weekYearSelect');
+  if (!weekYearSelect) return;
+  const availableYears = new Set();
+  if (window.allData && window.allData.length > 0) {
+    window.allData.forEach(data => {
+      if (data.tanggalDikubur) {
+        const date = new Date(data.tanggalDikubur);
+        if (!isNaN(date.getTime())) {
+          availableYears.add(date.getFullYear());
+        }
+      }
+    });
+  }
+  if (availableYears.size === 0) {
+    availableYears.add(new Date().getFullYear());
+  }
+  const sortedYears = Array.from(availableYears).sort((a, b) => a - b);
+  weekYearSelect.innerHTML = '';
+  sortedYears.forEach((year, idx) => {
+    const option = document.createElement('option');
+    option.value = year;
+    option.textContent = year;
+    if (idx === sortedYears.length - 1) option.selected = true; // default ke tahun terbaru
+    weekYearSelect.appendChild(option);
+  });
+}
+
 // Event listeners utama
 document.addEventListener('DOMContentLoaded', function() {
+  // Populate year select
+  populateYearSelect();
+  // Populate week year select
+  if (window.allData && window.allData.length > 0) {
+    populateWeekYearSelect();
+  } else {
+    // Jika data belum ada, load dulu lalu populate
+    loadPemakaman().then(() => populateWeekYearSelect());
+  }
+  
+  // Grafik button click handler
+  document.getElementById('grafikBtn')?.addEventListener('click', tampilkanGrafikMingguan);
+
+  // Event listener: update chart saat filter bulan/tahun mingguan diubah
+  document.getElementById('weekMonthSelect')?.addEventListener('change', tampilkanGrafikMingguan);
+  document.getElementById('weekYearSelect')?.addEventListener('change', tampilkanGrafikMingguan);
+  
+  // Close button handler untuk popup grafik
+  document.getElementById('closeWeeklyChart')?.addEventListener('click', function() {
+    document.getElementById('weeklyChartPopup').classList.add('hidden');
+  });
+
+  // Weekly/Monthly view buttons
+  document.getElementById('weeklyViewBtn')?.addEventListener('click', function() {
+    currentChartType = 'weekly';
+    currentSelectedMonth = null;
+    
+    // Update button styles
+    this.classList.remove('bg-gray-200', 'text-gray-700');
+    this.classList.add('bg-blue-500', 'text-white');
+    
+    const monthlyBtn = document.getElementById('monthlyViewBtn');
+    if (monthlyBtn) {
+      monthlyBtn.classList.remove('bg-blue-500', 'text-white');
+      monthlyBtn.classList.add('bg-gray-200', 'text-gray-700');
+    }
+    
+    // Hide month selection
+    const monthSelection = document.getElementById('monthSelection');
+    if (monthSelection) {
+      monthSelection.classList.add('hidden');
+    }
+    
+    // Clear active month buttons
+    document.querySelectorAll('.month-btn').forEach(btn => {
+      btn.classList.remove('active');
+    });
+    
+    // Show weekly chart
+    tampilkanGrafikMingguan();
+  });
+
+  document.getElementById('monthlyViewBtn')?.addEventListener('click', function() {
+    currentChartType = 'monthly';
+    
+    // Update button styles
+    this.classList.remove('bg-gray-200', 'text-gray-700');
+    this.classList.add('bg-blue-500', 'text-white');
+    
+    const weeklyBtn = document.getElementById('weeklyViewBtn');
+    if (weeklyBtn) {
+      weeklyBtn.classList.remove('bg-blue-500', 'text-white');
+      weeklyBtn.classList.add('bg-gray-200', 'text-gray-700');
+    }
+    
+    // Show month selection
+    const monthSelection = document.getElementById('monthSelection');
+    if (monthSelection) {
+      monthSelection.classList.remove('hidden');
+    }
+    
+    // Show monthly chart (all months)
+    tampilkanGrafikBulanan();
+  });
+
+  // Month selection buttons
+  document.querySelectorAll('.month-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const month = this.getAttribute('data-month');
+      currentSelectedMonth = month;
+      
+      // Update active month button
+      document.querySelectorAll('.month-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      
+      // Show chart for selected month
+      const yearSelect = document.getElementById('yearSelect');
+      const selectedYear = yearSelect ? parseInt(yearSelect.value) : currentSelectedYear;
+      tampilkanGrafikBulanan(month, selectedYear);
+    });
+  });
+
+  // Year selection change
+  document.getElementById('yearSelect')?.addEventListener('change', function() {
+    currentSelectedYear = parseInt(this.value);
+    
+    if (currentChartType === 'weekly') {
+      tampilkanGrafikMingguan();
+    } else {
+      tampilkanGrafikBulanan(currentSelectedMonth, currentSelectedYear);
+    }
+  });
+
   // --- AUTO NOMOR MAKAM ---
   const blokModal = document.getElementById('blokModal');
   const bladModal = document.getElementById('bladModal');
